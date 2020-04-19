@@ -115,7 +115,7 @@ func Delay(milliseconds int16) {
 	time.Sleep(time.Duration(milliseconds) * time.Millisecond)
 }
 
-func Sound(x int16) {
+func Sound(x uint16) {
 	// TODO
 }
 

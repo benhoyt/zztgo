@@ -358,9 +358,6 @@ func SidebarPromptSlider(editable bool, x, y int16, prompt string, value *byte) 
 	VideoWriteText(x, y+2, 0x1E, startChar+"....:...."+endChar)
 	for {
 		if editable {
-			if InputJoystickMoved {
-				Delay(45)
-			}
 			VideoWriteText(x+int16(*value)+1, y+1, 0x9F, "\x1f")
 			InputUpdate()
 			if InputKeyPressed >= '1' && InputKeyPressed <= '9' {
@@ -616,7 +613,7 @@ func WorldLoad(filename, extension string, titleOnly bool) (WorldLoad bool) {
 			BoardOpen(World.Info.CurrentBoard)
 			LoadedGameFileName = filename
 			WorldLoad = true
-			HighScoresLoad()
+			// TODO: HighScoresLoad()
 			SidebarClearLine(5)
 		}
 	}
@@ -1294,10 +1291,11 @@ func GamePlayLoop(boardChanged bool) {
 			VideoWriteText(65, 16, 0x1F, " About ZZT!")
 			VideoWriteText(62, 17, 0x70, " H ")
 			VideoWriteText(65, 17, 0x1E, " High Scores")
-			if EditorEnabled {
-				VideoWriteText(62, 18, 0x30, " E ")
-				VideoWriteText(65, 18, 0x1E, " Board Editor")
-			}
+			// TODO
+			// if EditorEnabled {
+			// 	VideoWriteText(62, 18, 0x30, " E ")
+			// 	VideoWriteText(65, 18, 0x1E, " Board Editor")
+			// }
 		}
 
 	}
@@ -1398,7 +1396,7 @@ func GamePlayLoop(boardChanged bool) {
 	SoundClearQueue()
 	if GameStateElement == E_PLAYER {
 		if World.Info.Health <= 0 {
-			HighScoresAdd(World.Info.Score)
+			// TODO: HighScoresAdd(World.Info.Score)
 		}
 	} else if GameStateElement == E_MONITOR {
 		SidebarClearLine(5)
@@ -1445,12 +1443,13 @@ func GameTitleLoop() {
 				}
 			case 'A':
 				GameAboutScreen()
-			case 'E':
-				if EditorEnabled {
-					EditorLoop()
-					ReturnBoardId = World.Info.CurrentBoard
-					boardChanged = true
-				}
+			// TODO
+			// case 'E':
+			// 	if EditorEnabled {
+			// 		EditorLoop()
+			// 		ReturnBoardId = World.Info.CurrentBoard
+			// 		boardChanged = true
+			// 	}
 			case 'S':
 				SidebarPromptSlider(true, 66, 21, "Game speed:;FS", &TickSpeed)
 				InputKeyPressed = '\x00'
@@ -1460,9 +1459,10 @@ func GameTitleLoop() {
 					BoardChange(ReturnBoardId)
 					startPlay = true
 				}
-			case 'H':
-				HighScoresLoad()
-				HighScoresDisplay(1)
+			// TODO
+			// case 'H':
+			// 	HighScoresLoad()
+			// 	HighScoresDisplay(1)
 			case '|':
 				GameDebugPrompt()
 			case KEY_ESCAPE, 'Q':

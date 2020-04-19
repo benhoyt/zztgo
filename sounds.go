@@ -27,21 +27,21 @@ var (
 // implementation uses: Crt, Dos
 
 func SoundQueue(priority int16, pattern string) {
-	if !SoundBlockQueueing && (!SoundIsPlaying || (priority >= SoundCurrentPriority && SoundCurrentPriority != -1 || priority == -1)) {
-		if priority >= 0 || !SoundIsPlaying {
-			SoundCurrentPriority = priority
-			SoundBuffer = pattern
-			SoundBufferPos = 1
-			SoundDurationCounter = 1
-		} else {
-			SoundBuffer = Copy(SoundBuffer, SoundBufferPos, Length(SoundBuffer)-SoundBufferPos+1)
-			SoundBufferPos = 1
-			if Length(SoundBuffer)+Length(pattern) < 255 {
-				SoundBuffer += pattern
-			}
-		}
-		SoundIsPlaying = true
-	}
+	// if !SoundBlockQueueing && (!SoundIsPlaying || (priority >= SoundCurrentPriority && SoundCurrentPriority != -1 || priority == -1)) {
+	// 	if priority >= 0 || !SoundIsPlaying {
+	// 		SoundCurrentPriority = priority
+	// 		SoundBuffer = pattern
+	// 		SoundBufferPos = 1
+	// 		SoundDurationCounter = 1
+	// 	} else {
+	// 		SoundBuffer = Copy(SoundBuffer, SoundBufferPos, Length(SoundBuffer)-SoundBufferPos+1)
+	// 		SoundBufferPos = 1
+	// 		if Length(SoundBuffer)+Length(pattern) < 255 {
+	// 			SoundBuffer += pattern
+	// 		}
+	// 	}
+	// 	SoundIsPlaying = true
+	// }
 }
 
 func SoundClearQueue() {
@@ -121,30 +121,31 @@ func SoundCheckTimeIntr() {
 }
 
 func SoundHasTimeElapsed(counter *int16, duration int16) (SoundHasTimeElapsed bool) {
-	var (
-		hour, minute, sec, hSec uint16
-		hSecsDiff               uint16
-		hSecsTotal              int16
-	)
-	if SoundTimeCheckCounter > 0 && SoundTimeCheckCounter%2 == 1 {
-		SoundTimeCheckCounter--
-		SoundCheckTimeIntr()
-	}
-	if UseSystemTimeForElapsed {
-		GetTime(&hour, &minute, &sec, &hSec)
-		hSecsTotal = int16(sec*100 + hSec)
-		hSecsDiff = uint16(hSecsTotal-*counter+6000) % 6000
-	} else {
-		hSecsTotal = int16(TimerTicks * 6)
-		hSecsDiff = uint16(hSecsTotal - *counter)
-	}
-	if hSecsDiff >= uint16(duration) {
-		SoundHasTimeElapsed = true
-		*counter = hSecsTotal
-	} else {
-		SoundHasTimeElapsed = false
-	}
-	return
+	return true
+	// var (
+	// 	hour, minute, sec, hSec uint16
+	// 	hSecsDiff               uint16
+	// 	hSecsTotal              int16
+	// )
+	// if SoundTimeCheckCounter > 0 && SoundTimeCheckCounter%2 == 1 {
+	// 	SoundTimeCheckCounter--
+	// 	SoundCheckTimeIntr()
+	// }
+	// if UseSystemTimeForElapsed {
+	// 	GetTime(&hour, &minute, &sec, &hSec)
+	// 	hSecsTotal = int16(sec*100 + hSec)
+	// 	hSecsDiff = uint16(hSecsTotal-*counter+6000) % 6000
+	// } else {
+	// 	hSecsTotal = int16(TimerTicks * 6)
+	// 	hSecsDiff = uint16(hSecsTotal - *counter)
+	// }
+	// if hSecsDiff >= uint16(duration) {
+	// 	SoundHasTimeElapsed = true
+	// 	*counter = hSecsTotal
+	// } else {
+	// 	SoundHasTimeElapsed = false
+	// }
+	// return
 }
 
 func SoundTimerHandler() {
@@ -181,7 +182,7 @@ func SoundTimerHandler() {
 }
 
 func SoundUninstall() {
-	SetIntVec(0x1C, SoundOldVector)
+	// SetIntVec(0x1C, SoundOldVector)
 }
 
 func SoundParse(input string) (SoundParse string) {
@@ -192,7 +193,7 @@ func SoundParse(input string) (SoundParse string) {
 		noteTone     int16
 	)
 	AdvanceInput := func() {
-		input = Copy(input, 2, Length(input)-1)
+		input = input[1:]
 	}
 
 	output = ""
@@ -271,7 +272,7 @@ func SoundParse(input string) (SoundParse string) {
 		case 'X':
 			output += "\x00" + Chr(byte(noteDuration))
 			AdvanceInput()
-		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		case '0', '1', '2', '4', '5', '6', '7', '8', '9':
 			output += Chr(Ord(input[1])+0xF0-Ord('0')) + Chr(byte(noteDuration))
 			AdvanceInput()
 		default:
@@ -295,7 +296,7 @@ func init() {
 	SoundDurationMultiplier = 1
 	SoundIsPlaying = false
 	TimerTicks = 0
-	SoundNewVector = &SoundTimerHandler
-	GetIntVec(0x1C, SoundOldVector)
-	SetIntVec(0x1C, SoundNewVector)
+	// SoundNewVector = &SoundTimerHandler
+	// GetIntVec(0x1C, SoundOldVector)
+	// SetIntVec(0x1C, SoundNewVector)
 }

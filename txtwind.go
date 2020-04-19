@@ -296,9 +296,6 @@ func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bo
 				}
 			}
 		}
-		if InputJoystickMoved {
-			Delay(35)
-		}
 		if InputKeyPressed == KEY_ESCAPE || InputKeyPressed == KEY_ENTER || InputShiftPressed {
 			break
 		}

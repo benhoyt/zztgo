@@ -28,9 +28,8 @@ func ParseArguments() {
 
 func GameConfigure() {
 	var (
-		unk1                          int16
-		joystickEnabled, mouseEnabled bool
-		cfgFile                       text
+		unk1    int16
+		cfgFile text
 	)
 	ParsingConfigFile = true
 	EditorEnabled = true
@@ -51,8 +50,6 @@ func GameConfigure() {
 		StartupWorldFileName = ConfigWorldFile
 	}
 	InputInitDevices()
-	joystickEnabled = InputJoystickEnabled
-	mouseEnabled = InputMouseEnabled
 	ParsingConfigFile = false
 	Window(1, 1, 80, 25)
 	TextBackground(Black)
@@ -87,14 +84,7 @@ func GameConfigure() {
 	TextBackground(Black)
 	ClrScr()
 	TextColor(Yellow)
-	if !InputConfigure() {
-		GameTitleExitRequested = true
-	} else {
-		TextColor(LightGreen)
-		if !VideoConfigure {
-			GameTitleExitRequested = true
-		}
-	}
+	TextColor(LightGreen)
 	Window(1, 1, 80, 25)
 }
 

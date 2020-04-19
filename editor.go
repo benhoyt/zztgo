@@ -1,3 +1,5 @@
+// +build nobuild
+
 package main // unit: Editor
 
 // interface uses: GameVars, TxtWind
@@ -612,9 +614,6 @@ func EditorLoop() {
 				cursorY = BOARD_HEIGHT
 			}
 			VideoWriteText(cursorX-1, cursorY-1, 0x0F, "\xc5")
-			if InputKeyPressed == '\x00' && InputJoystickEnabled {
-				Delay(70)
-			}
 			InputShiftAccepted = false
 		}
 		switch UpCase(InputKeyPressed) {
