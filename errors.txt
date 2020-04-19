@@ -36,9 +36,3 @@
 ./txtwind.go:554:30: cannot assign to TextWindowStrInnerArrows[0]
 ./txtwind.go:555:63: cannot assign to TextWindowStrInnerArrows[Length(TextWindowStrInnerArrows) - 1]
 ./txtwind.go:558:52: cannot assign to TextWindowStrInnerSep[i * 5 + TextWindowWidth % 5 / 2 - 1]
-./zzt.go:34:2: undefined: VideoInstall
-./zzt.go:34:19: undefined: Blue
-./zzt.go:37:2: undefined: VideoHideCursor
-./zzt.go:38:2: undefined: ClrScr
-./zzt.go:49:2: undefined: VideoUninstall
-./zzt.go:50:2: undefined: VideoShowCursor

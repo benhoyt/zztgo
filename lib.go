@@ -107,11 +107,20 @@ func VideoMove(x, y, chars int16, data interface{}, toVideo bool) {
 	// TODO
 }
 
+func VideoHideCursor()                        {} // TODO
+func VideoShowCursor()                        {} // TODO
+func VideoInstall(columns, borderColor int16) {} // TODO
+func VideoUninstall()                         {} // TODO
+func ClrScr()                                 {} // TODO
+
 func TextColor(color byte) {
 	// TODO
 }
 
-const LightGray byte = 7
+const (
+	Blue      = 1
+	LightGray = 7
+)
 
 func GotoXY(x, y int16) {
 	// TODO
