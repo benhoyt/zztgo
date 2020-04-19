@@ -63,10 +63,6 @@ func StrWidth(n, width int16) string {
 	return ""
 }
 
-func WriteLn(args ...interface{}) {
-	// TODO
-}
-
 // NOTE: in Turbo Pascal Delete() is a procedure that modifies the string in-place
 func Delete(s string, index, count int16) string {
 	return s[:index-1] + s[index-1+count:]
@@ -206,6 +202,10 @@ func Reset(f *File, _ ...interface{}) {
 	setIOResult(err)
 }
 
+func Eof(f *File) bool {
+	return false // TODO
+}
+
 func Rewrite(f *File, _ ...interface{}) {
 	file, err := os.Create(f.name)
 	f.file = file
@@ -230,6 +230,9 @@ func Write(args ...interface{}) {
 	// err := binary.Write(f.file, binary.LittleEndian, data)
 	// setIOResult(err)
 }
+
+func ReadLn(f *File, args ...interface{})  {} // TODO
+func WriteLn(f *File, args ...interface{}) {} // TODO
 
 func Close(f *File) {
 	err := f.file.Close()

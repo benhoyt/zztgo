@@ -8,31 +8,24 @@
 ./oop.go:17:8: invalid indirect of Ptr(Seg(*stat.Data), Ofs(*stat.Data) + *position) (type uintptr)
 ./oop.go:666:16: cannot use Board.Stats[labelStatId].Data (type *string) as type *uintptr in assignment
 ./oop.go:675:17: cannot use Board.Stats[labelStatId].Data (type *string) as type *uintptr in assignment
-./txtwind.go:168:10: undefined: Lst
-./txtwind.go:189:11: undefined: Lst
-./txtwind.go:191:10: undefined: Lst
-./txtwind.go:195:8: undefined: Lst
-./txtwind.go:196:8: undefined: Lst
-./txtwind.go:216:36: invalid operation: state.Lines[state.LinePos - 1][0] (type *string does not support indexing)
-./txtwind.go:243:77: invalid operation: state.Lines[iLine - 1][iChar - 1] (type *string does not support indexing)
-./txtwind.go:278:36: invalid operation: state.Lines[state.LinePos - 1][0] (type *string does not support indexing)
-./txtwind.go:338:111: invalid operation: state.Lines[state.LinePos - 1][charPos - 1] (type *string does not support indexing)
-./txtwind.go:394:95: invalid operation: Copy(*state.Lines[state.LinePos - 1], 1, charPos - 1) + InputKeyPressed (mismatched types string and byte)
-./txtwind.go:398:96: invalid operation: Copy(*state.Lines[state.LinePos - 1], 1, charPos - 1) + InputKeyPressed (mismatched types string and byte)
-./txtwind.go:429:12: undefined: text
-./txtwind.go:472:27: undefined: Eof
-./txtwind.go:475:4: undefined: ReadLn
-./txtwind.go:479:13: undefined: ResourceDataFilename
-./txtwind.go:481:40: cannot use ResourceDataHeader.FileOffset[entryPos - 1] (type int32) as type int16 in argument to Seek
-./txtwind.go:488:10: cannot use Ptr(Seg(*state.Lines[state.LineCount - 1]), Ofs(*state.Lines[state.LineCount - 1]) + 1) (type uintptr) as type *string in assignment
-./txtwind.go:489:50: invalid operation: state.Lines[state.LineCount - 1][-1] (type *string does not support indexing)
-./txtwind.go:493:29: cannot use Ord(*state.Lines[state.LineCount - 1][-1]) (type byte) as type int16 in argument to BlockRead
-./txtwind.go:493:61: invalid operation: state.Lines[state.LineCount - 1][-1] (type *string does not support indexing)
-./txtwind.go:507:5: undefined: text
-./txtwind.go:546:27: cannot convert ' ' (type untyped number) to type string
-./txtwind.go:546:27: invalid operation: TextWindowStrInnerEmpty += ' ' (mismatched types string and rune)
-./txtwind.go:547:26: cannot convert '\u00cd' (type untyped number) to type string
-./txtwind.go:547:26: invalid operation: TextWindowStrInnerLine += '\u00cd' (mismatched types string and rune)
-./txtwind.go:554:30: cannot assign to TextWindowStrInnerArrows[0]
-./txtwind.go:555:63: cannot assign to TextWindowStrInnerArrows[Length(TextWindowStrInnerArrows) - 1]
-./txtwind.go:558:52: cannot assign to TextWindowStrInnerSep[i * 5 + TextWindowWidth % 5 / 2 - 1]
+./txtwind.go:176:36: invalid operation: state.Lines[state.LinePos - 1][0] (type *string does not support indexing)
+./txtwind.go:203:77: invalid operation: state.Lines[iLine - 1][iChar - 1] (type *string does not support indexing)
+./txtwind.go:235:36: invalid operation: state.Lines[state.LinePos - 1][0] (type *string does not support indexing)
+./txtwind.go:295:111: invalid operation: state.Lines[state.LinePos - 1][charPos - 1] (type *string does not support indexing)
+./txtwind.go:351:95: invalid operation: Copy(*state.Lines[state.LinePos - 1], 1, charPos - 1) + InputKeyPressed (mismatched types string and byte)
+./txtwind.go:355:96: invalid operation: Copy(*state.Lines[state.LinePos - 1], 1, charPos - 1) + InputKeyPressed (mismatched types string and byte)
+./txtwind.go:386:12: undefined: text
+./txtwind.go:436:13: undefined: ResourceDataFilename
+./txtwind.go:438:40: cannot use ResourceDataHeader.FileOffset[entryPos - 1] (type int32) as type int16 in argument to Seek
+./txtwind.go:445:10: cannot use Ptr(Seg(*state.Lines[state.LineCount - 1]), Ofs(*state.Lines[state.LineCount - 1]) + 1) (type uintptr) as type *string in assignment
+./txtwind.go:446:50: invalid operation: state.Lines[state.LineCount - 1][-1] (type *string does not support indexing)
+./txtwind.go:450:29: cannot use Ord(*state.Lines[state.LineCount - 1][-1]) (type byte) as type int16 in argument to BlockRead
+./txtwind.go:450:61: invalid operation: state.Lines[state.LineCount - 1][-1] (type *string does not support indexing)
+./txtwind.go:464:5: undefined: text
+./txtwind.go:503:27: cannot convert ' ' (type untyped number) to type string
+./txtwind.go:503:27: invalid operation: TextWindowStrInnerEmpty += ' ' (mismatched types string and rune)
+./txtwind.go:504:26: cannot convert '\u00cd' (type untyped number) to type string
+./txtwind.go:504:26: invalid operation: TextWindowStrInnerLine += '\u00cd' (mismatched types string and rune)
+./txtwind.go:511:30: cannot assign to TextWindowStrInnerArrows[0]
+./txtwind.go:512:63: cannot assign to TextWindowStrInnerArrows[Length(TextWindowStrInnerArrows) - 1]
+./txtwind.go:515:52: cannot assign to TextWindowStrInnerSep[i * 5 + TextWindowWidth % 5 / 2 - 1]

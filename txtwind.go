@@ -128,11 +128,7 @@ func TextWindowDrawLine(state *TTextWindowState, lpos int16, withoutFormatting, 
 	} else if lpos == -4 && viewingFile {
 		VideoWriteText(TextWindowX+2, lineY, 0x1A, "   Use            to view text,")
 		VideoWriteText(TextWindowX+2+7, lineY, 0x1F, "\x18 \x19, Enter")
-	} else if lpos == -3 && viewingFile {
-		VideoWriteText(TextWindowX+2+1, lineY, 0x1A, "                 to print.")
-		VideoWriteText(TextWindowX+2+12, lineY, 0x1F, "Alt-P")
 	}
-
 }
 
 func TextWindowDraw(state *TTextWindowState, withoutFormatting, viewingFile bool) {
@@ -158,42 +154,6 @@ func TextWindowFree(state *TTextWindowState) {
 		state.LineCount--
 	}
 	state.LoadedFilename = ""
-}
-
-func TextWindowPrint(state *TTextWindowState) {
-	var (
-		iLine, iChar int16
-		line         string
-	)
-	Rewrite(Lst)
-	for iLine = 1; iLine <= state.LineCount; iLine++ {
-		line = *state.Lines[iLine-1]
-		if Length(line) > 0 {
-			switch line[1] {
-			case '$':
-				line = Delete(line, 1, 1)
-				for iChar = (80 - Length(line)) / 2; iChar >= 1; iChar-- {
-					line = " " + line
-				}
-			case '!', ':':
-				iChar = Pos(';', line)
-				if iChar > 0 {
-					line = Delete(line, 1, iChar)
-				} else {
-					line = ""
-				}
-			default:
-				line = "          " + line
-			}
-		}
-		WriteLn(Lst, line)
-		if IOResult() != 0 {
-			Close(Lst)
-			return
-		}
-	}
-	Write(Lst, Chr(12))
-	Close(Lst)
 }
 
 func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bool) {
@@ -259,10 +219,7 @@ func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bo
 				newLinePos = state.LinePos - TextWindowHeight + 4
 			} else if InputKeyPressed == KEY_PAGE_DOWN {
 				newLinePos = state.LinePos + TextWindowHeight - 4
-			} else if InputKeyPressed == KEY_ALT_P {
-				TextWindowPrint(state)
 			}
-
 		}
 
 	LabelMatched:
