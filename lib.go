@@ -131,10 +131,6 @@ func NoSound() {
 	// TODO
 }
 
-func SetCBreak(enabled bool) {
-	// TODO
-}
-
 // Math functions
 
 func Random(end int16) int16 {
@@ -264,6 +260,10 @@ var MemAvail int16 = 32767
 
 func New(p interface{}) {
 	// TODO
+}
+
+func Dispose(p interface{}) {
+	// TODO -- do nothing
 }
 
 func FreeMem(p interface{}, size int16) {

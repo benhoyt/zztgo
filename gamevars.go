@@ -164,7 +164,6 @@ var (
 	GamePaused                  bool
 	TickTimeCounter             int16
 	ForceDarknessOff            bool
-	InitialTextAttr             byte
 	OopChar                     byte
 	OopWord                     string
 	OopValue                    int16
@@ -173,9 +172,6 @@ var (
 	ConfigRegistration          string
 	ConfigWorldFile             string
 	EditorEnabled               bool
-	GameVersion                 string
-	ParsingConfigFile           bool
-	ResetConfig                 bool
 	JustStarted                 bool
 	WorldFileDescCount          int16
 	WorldFileDescKeys           [10]string

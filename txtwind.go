@@ -40,7 +40,6 @@ var (
 	TextWindowRejected                bool
 	ResourceDataFileName              string
 	ResourceDataHeader                TResourceDataHeader
-	OrderPrintId                      *string
 )
 
 // implementation uses: Crt, Input, Printer
@@ -192,9 +191,6 @@ func TextWindowPrint(state *TTextWindowState) {
 			Close(Lst)
 			return
 		}
-	}
-	if state.LoadedFilename == "ORDER.HLP" {
-		WriteLn(Lst, *OrderPrintId)
 	}
 	Write(Lst, Chr(12))
 	Close(Lst)

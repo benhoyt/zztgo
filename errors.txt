@@ -1,0 +1,11 @@
+# github.com/benhoyt/zztgo
+./game.go:60:11: cannot use Ptr(Seg(* (*address)), Ofs(* (*address)) + count) (type uintptr) as type *uintptr in assignment
+./game.go:69:6: cannot use IoTmpBuf (type *TIoTmpBuf) as type *uintptr in assignment
+./game.go:107:38: type TStat is not an expression
+./game.go:586:8: cannot use IoTmpBuf (type *TIoTmpBuf) as type *uintptr in assignment
+./game.go:636:7: cannot use IoTmpBuf (type *TIoTmpBuf) as type *uintptr in assignment
+./game.go:737:10: cannot use stat.Data (type *string) as type *uintptr in assignment
+./oop.go:17:8: invalid indirect of Ptr(Seg(*stat.Data), Ofs(*stat.Data) + *position) (type uintptr)
+./oop.go:666:16: cannot use Board.Stats[labelStatId].Data (type *string) as type *uintptr in assignment
+./oop.go:675:17: cannot use Board.Stats[labelStatId].Data (type *string) as type *uintptr in assignment
+./txtwind.go:107:32: invalid operation: state.Lines[lpos - 1][0] (type *string does not support indexing)
