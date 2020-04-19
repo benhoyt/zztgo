@@ -104,7 +104,7 @@ func TextWindowDrawLine(state *TTextWindowState, lpos int16, withoutFormatting, 
 			textColor = 0x1E
 			textX = TextWindowX + 4
 			if Length(*state.Lines[lpos-1]) > 0 {
-				switch *state.Lines[lpos-1][0] {
+				switch (*state.Lines[lpos-1])[0] {
 				case '!':
 					textOffset = Pos(';', *state.Lines[lpos-1]) + 1
 					VideoWriteText(textX+2, lineY, 0x1D, "\x10")
