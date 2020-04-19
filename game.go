@@ -355,7 +355,7 @@ func SidebarPromptSlider(editable bool, x, y int16, prompt string, value *byte) 
 	VideoWriteText(x, y, byte(BoolToInt(editable)+0x1E), prompt)
 	SidebarClearLine(y + 1)
 	SidebarClearLine(y + 2)
-	VideoWriteText(x, y+2, 0x1E, startChar+"....:...."+endChar)
+	VideoWriteText(x, y+2, 0x1E, string(startChar)+"....:...."+string(endChar))
 	for {
 		if editable {
 			VideoWriteText(x+int16(*value)+1, y+1, 0x9F, "\x1f")
@@ -1180,9 +1180,7 @@ func GameDebugPrompt() {
 	SidebarClearLine(4)
 	SidebarClearLine(5)
 	PromptString(63, 5, 0x1E, 0x0F, 11, PROMPT_ANY, &input)
-	for i = 1; i <= Length(input); i++ {
-		input[i-1] = string(UpCase(input[i-1]))
-	}
+	input = UpCaseString(input)
 	toggle = true
 	if input[0] == '+' || input[0] == '-' {
 		if input[0] == '-' {

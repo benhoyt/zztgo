@@ -45,15 +45,6 @@ var (
 
 // implementation uses: Crt, Input, Printer
 
-func UpCaseString(input string) (UpCaseString string) {
-	var i int16
-	for i = 1; i <= Length(input); i++ {
-		input[i] = string(UpCase(input[i]))
-	}
-	UpCaseString = input
-	return
-}
-
 func TextWindowInitState(state *TTextWindowState) {
 	state.LineCount = 0
 	state.LinePos = 1

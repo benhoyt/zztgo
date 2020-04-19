@@ -31,6 +31,14 @@ func UpCase(b byte) byte {
 	return b
 }
 
+func UpCaseString(input string) string {
+	b := make([]byte, len(input))
+	for i := 0; i < len(input); i++ {
+		b[i] = UpCase(input[i])
+	}
+	return string(b)
+}
+
 func Copy(s string, index, count int16) string {
 	return s[index-1 : index-1+count]
 }
