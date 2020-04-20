@@ -56,9 +56,9 @@ func GenerateTransitionTable() {
 	}
 }
 
-func AdvancePointer(address **uintptr, count int16) {
-	*address = Ptr(Seg(**address), Ofs(**address)+count)
-}
+// TODO remove: func AdvancePointer(address **uintptr, count int16) {
+// 	*address = Ptr(Seg(**address), Ofs(**address)+count)
+// }
 
 func BoardClose() {
 	var (
@@ -66,9 +66,9 @@ func BoardClose() {
 		ptr    *uintptr
 		rle    TRleTile
 	)
-	ptr = IoTmpBuf
-	Move(Board.Name, *ptr, SizeOf(Board.Name))
-	AdvancePointer(&ptr, SizeOf(Board.Name))
+	// TODO: ptr = IoTmpBuf
+	Move(Board.Name, *ptr, 0) // TODO: SizeOf(Board.Name))
+	// TODO: AdvancePointer(&ptr, SizeOf(Board.Name))
 	ix = 1
 	iy = 1
 	rle.Count = 1
@@ -83,7 +83,7 @@ func BoardClose() {
 			rle.Count++
 		} else {
 			Move(rle, *ptr, SizeOf(rle))
-			AdvancePointer(&ptr, SizeOf(rle))
+			// TODO: AdvancePointer(&ptr, SizeOf(rle))
 			rle.Tile = Board.Tiles[ix][iy]
 			rle.Count = 1
 		}
@@ -92,9 +92,9 @@ func BoardClose() {
 		}
 	}
 	Move(Board.Info, *ptr, SizeOf(Board.Info))
-	AdvancePointer(&ptr, SizeOf(Board.Info))
+	// TODO: AdvancePointer(&ptr, SizeOf(Board.Info))
 	Move(Board.StatCount, *ptr, SizeOf(Board.StatCount))
-	AdvancePointer(&ptr, SizeOf(Board.StatCount))
+	// TODO: AdvancePointer(&ptr, SizeOf(Board.StatCount))
 	for ix = 0; ix <= Board.StatCount; ix++ {
 		stat := &Board.Stats[ix]
 		if stat.DataLen > 0 {
@@ -104,12 +104,12 @@ func BoardClose() {
 				}
 			}
 		}
-		Move(Board.Stats[ix], *ptr, SizeOf(TStat))
-		AdvancePointer(&ptr, SizeOf(TStat))
+		Move(Board.Stats[ix], *ptr, 0) // TODO: SizeOf(TStat))
+		// TODO: AdvancePointer(&ptr, SizeOf(TStat))
 		if stat.DataLen > 0 {
-			Move(*stat.Data, *ptr, stat.DataLen)
+			// TODO: Move(*stat.Data, *ptr, stat.DataLen)
 			FreeMem(stat.Data, stat.DataLen)
-			AdvancePointer(&ptr, stat.DataLen)
+			// TODO: AdvancePointer(&ptr, stat.DataLen)
 		}
 	}
 	FreeMem(World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
@@ -129,14 +129,14 @@ func BoardOpen(boardId int16) {
 	}
 	ptr = World.BoardData[boardId]
 	Move(*ptr, Board.Name, SizeOf(Board.Name))
-	AdvancePointer(&ptr, SizeOf(Board.Name))
+	// TODO: AdvancePointer(&ptr, SizeOf(Board.Name))
 	ix = 1
 	iy = 1
 	rle.Count = 0
 	for {
 		if rle.Count <= 0 {
 			Move(*ptr, rle, SizeOf(rle))
-			AdvancePointer(&ptr, SizeOf(rle))
+			// TODO: AdvancePointer(&ptr, SizeOf(rle))
 		}
 		Board.Tiles[ix][iy] = rle.Tile
 		ix++
@@ -150,17 +150,17 @@ func BoardOpen(boardId int16) {
 		}
 	}
 	Move(*ptr, Board.Info, SizeOf(Board.Info))
-	AdvancePointer(&ptr, SizeOf(Board.Info))
+	// TODO: AdvancePointer(&ptr, SizeOf(Board.Info))
 	Move(*ptr, Board.StatCount, SizeOf(Board.StatCount))
-	AdvancePointer(&ptr, SizeOf(Board.StatCount))
+	// TODO: AdvancePointer(&ptr, SizeOf(Board.StatCount))
 	for ix = 0; ix <= Board.StatCount; ix++ {
 		stat := &Board.Stats[ix]
-		Move(*ptr, Board.Stats[ix], SizeOf(TStat))
-		AdvancePointer(&ptr, SizeOf(TStat))
+		Move(*ptr, Board.Stats[ix], 0) // TODO: SizeOf(TStat))
+		// TODO: AdvancePointer(&ptr, SizeOf(TStat))
 		if stat.DataLen > 0 {
 			GetMem(stat.Data, stat.DataLen)
-			Move(*ptr, *stat.Data, stat.DataLen)
-			AdvancePointer(&ptr, stat.DataLen)
+			// TODO: Move(*ptr, *stat.Data, stat.DataLen)
+			// TODO: AdvancePointer(&ptr, stat.DataLen)
 		} else if stat.DataLen < 0 {
 			stat.Data = Board.Stats[-stat.DataLen].Data
 			stat.DataLen = Board.Stats[-stat.DataLen].DataLen
@@ -218,7 +218,7 @@ func BoardCreate() {
 	Board.Stats[0].Cycle = 1
 	Board.Stats[0].Under.Element = E_EMPTY
 	Board.Stats[0].Under.Color = 0
-	Board.Stats[0].Data = nil
+	Board.Stats[0].Data = ""
 	Board.Stats[0].DataLen = 0
 }
 
@@ -525,8 +525,7 @@ func PauseOnError() {
 
 func DisplayIOError() (DisplayIOError bool) {
 	var (
-		errorNumStr string
-		textWindow  TTextWindowState
+		textWindow TTextWindowState
 	)
 	if IOResult() == 0 {
 		DisplayIOError = false
@@ -583,9 +582,9 @@ func WorldLoad(filename, extension string, titleOnly bool) (WorldLoad bool) {
 		WorldUnload()
 		BlockRead(f, *IoTmpBuf, 512)
 		if !DisplayIOError() {
-			ptr = IoTmpBuf
+			// TODO: ptr = IoTmpBuf
 			Move(*ptr, World.BoardCount, SizeOf(World.BoardCount))
-			AdvancePointer(&ptr, SizeOf(World.BoardCount))
+			// TODO: AdvancePointer(&ptr, SizeOf(World.BoardCount))
 			if World.BoardCount < 0 {
 				if World.BoardCount != -1 {
 					VideoWriteText(63, 5, 0x1E, "You need a newer")
@@ -593,11 +592,11 @@ func WorldLoad(filename, extension string, titleOnly bool) (WorldLoad bool) {
 					return
 				} else {
 					Move(*ptr, World.BoardCount, SizeOf(World.BoardCount))
-					AdvancePointer(&ptr, SizeOf(World.BoardCount))
+					// TODO: AdvancePointer(&ptr, SizeOf(World.BoardCount))
 				}
 			}
 			Move(*ptr, World.Info, SizeOf(World.Info))
-			AdvancePointer(&ptr, SizeOf(World.Info))
+			// TODO: AdvancePointer(&ptr, SizeOf(World.Info))
 			if titleOnly {
 				World.BoardCount = 0
 				World.Info.CurrentBoard = 0
@@ -624,7 +623,6 @@ func WorldSave(filename, extension string) {
 	var (
 		f       *File
 		i       int16
-		unk1    int16
 		ptr     *uintptr
 		version int16
 	)
@@ -633,15 +631,15 @@ func WorldSave(filename, extension string) {
 	Assign(f, filename+extension)
 	Rewrite(f, 1)
 	if !DisplayIOError() {
-		ptr = IoTmpBuf
+		// TODO: ptr = IoTmpBuf
 		FillChar(*IoTmpBuf, 512, 0)
 		version = -1
 		Move(version, *ptr, SizeOf(version))
-		AdvancePointer(&ptr, SizeOf(version))
+		// TODO: AdvancePointer(&ptr, SizeOf(version))
 		Move(World.BoardCount, *ptr, SizeOf(World.BoardCount))
-		AdvancePointer(&ptr, SizeOf(World.BoardCount))
+		// TODO: AdvancePointer(&ptr, SizeOf(World.BoardCount))
 		Move(World.Info, *ptr, SizeOf(World.Info))
-		AdvancePointer(&ptr, SizeOf(World.Info))
+		// TODO: AdvancePointer(&ptr, SizeOf(World.Info))
 		BlockWrite(f, *IoTmpBuf, 512)
 		if DisplayIOError() {
 			goto OnError
@@ -734,7 +732,7 @@ func CopyStatDataToTextWindow(statId int16, state *TTextWindowState) {
 	stat := &Board.Stats[statId]
 	TextWindowInitState(state)
 	dataStr = ""
-	dataPtr = stat.Data
+	dataPtr = nil // TODO: stat.Data
 	for i = 0; i <= stat.DataLen; i++ {
 		Move(*dataPtr, dataChr, 1)
 		if dataChr == KEY_ENTER {
@@ -743,7 +741,7 @@ func CopyStatDataToTextWindow(statId int16, state *TTextWindowState) {
 		} else {
 			dataStr += string(dataChr)
 		}
-		AdvancePointer(&dataPtr, 1)
+		// TODO: AdvancePointer(&dataPtr, 1)
 	}
 }
 
@@ -757,9 +755,9 @@ func AddStat(tx, ty int16, element byte, color, tcycle int16, template TStat) {
 		stat.Cycle = tcycle
 		stat.Under = Board.Tiles[tx][ty]
 		stat.DataPos = 0
-		if template.Data != nil {
+		if template.Data != "" {
 			GetMem(Board.Stats[Board.StatCount].Data, template.DataLen)
-			Move(*template.Data, *Board.Stats[Board.StatCount].Data, template.DataLen)
+			// TODO: Move(*template.Data, *Board.Stats[Board.StatCount].Data, template.DataLen)
 		}
 		if ElementDefs[Board.Tiles[tx][ty].Element].PlaceableOnTop {
 			Board.Tiles[tx][ty].Color = byte(color&0x0F + int16(Board.Tiles[tx][ty].Color)&0x70)
@@ -860,10 +858,8 @@ func MoveStat(statId int16, newX, newY int16) {
 		iUnder     TTile
 		ix, iy     int16
 		oldX, oldY int16
-		oldBgColor int16
 	)
 	stat := &Board.Stats[statId]
-	oldBgColor = int16(Board.Tiles[newX][newY].Color) & 0xF0
 	iUnder = Board.Stats[statId].Under
 	Board.Stats[statId].Under = Board.Tiles[newX][newY]
 	if Board.Tiles[stat.X][stat.Y].Element == E_PLAYER {
@@ -1141,13 +1137,11 @@ func BoardEnter() {
 
 func BoardPassageTeleport(x, y int16) {
 	var (
-		oldBoard   int16
 		col        byte
 		ix, iy     int16
 		newX, newY int16
 	)
 	col = Board.Tiles[x][y].Color
-	oldBoard = World.Info.CurrentBoard
 	BoardChange(int16(Board.Stats[GetStatIdAt(x, y)].P3))
 	newX = 0
 	for ix = 1; ix <= BOARD_WIDTH; ix++ {

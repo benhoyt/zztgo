@@ -233,7 +233,6 @@ func OopIterateStat(statId int16, iStat *int16, lookup string) (OopIterateStat b
 func OopFindLabel(statId int16, sendLabel string, iStat, iDataPos *int16, labelPrefix string) (OopFindLabel bool) {
 	var (
 		targetSplitPos int16
-		unk1           int16
 		targetLookup   string
 		objectMessage  string
 		foundStat      bool
@@ -292,7 +291,6 @@ func WorldSetFlag(name string) {
 }
 
 func WorldClearFlag(name string) {
-	var i int16
 	if WorldGetFlagPosition(name) >= 0 {
 		World.Info.Flags[WorldGetFlagPosition(name)-1] = ""
 	}
@@ -488,7 +486,6 @@ func OopExecute(statId int16, position *int16, name string) {
 		lastPosition      int16
 		repeatInsNextTick bool
 		lineFinished      bool
-		labelPtr          *uintptr
 		labelDataPos      int16
 		labelStatId       int16
 		counterPtr        *int16

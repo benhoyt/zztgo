@@ -56,7 +56,7 @@ func TextWindowDrawTitle(color int16, title string) {
 }
 
 func TextWindowDrawOpen(state *TTextWindowState) {
-	var ix, iy int16
+	var iy int16
 	for iy = 1; iy <= TextWindowHeight+1; iy++ {
 		VideoMove(TextWindowX, iy+TextWindowY-1, TextWindowWidth, &state.ScreenCopy[iy-1], false)
 	}
@@ -73,8 +73,7 @@ func TextWindowDrawOpen(state *TTextWindowState) {
 
 func TextWindowDrawClose(state *TTextWindowState) {
 	var (
-		ix, iy     int16
-		unk1, unk2 int16
+		iy int16
 	)
 	for iy = 0; iy <= TextWindowHeight/2; iy++ {
 		VideoWriteText(TextWindowX, TextWindowY+iy, 0x0F, TextWindowStrTop)
@@ -133,8 +132,7 @@ func TextWindowDrawLine(state *TTextWindowState, lpos int16, withoutFormatting, 
 
 func TextWindowDraw(state *TTextWindowState, withoutFormatting, viewingFile bool) {
 	var (
-		i    int16
-		unk1 int16
+		i int16
 	)
 	for i = 0; i <= TextWindowHeight-4; i++ {
 		TextWindowDrawLine(state, state.LinePos-TextWindowHeight/2+i+2, withoutFormatting, viewingFile)
@@ -159,7 +157,6 @@ func TextWindowFree(state *TTextWindowState) {
 func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bool) {
 	var (
 		newLinePos   int16
-		unk1         int16
 		iLine, iChar int16
 		pointerStr   string
 	)

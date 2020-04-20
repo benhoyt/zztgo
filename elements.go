@@ -793,7 +793,6 @@ func ElementMove(oldX, oldY, newX, newY int16) {
 }
 
 func ElementPushablePush(x, y int16, deltaX, deltaY int16) {
-	var unk1 int16
 	tile := &Board.Tiles[x][y]
 	if tile.Element == E_SLIDER_NS && deltaX == 0 || tile.Element == E_SLIDER_EW && deltaY == 0 || ElementDefs[tile.Element].Pushable {
 		if Board.Tiles[x+deltaX][y+deltaY].Element == E_TRANSPORTER {
@@ -830,7 +829,6 @@ func ElementDuplicatorDraw(x, y int16, ch *byte) {
 }
 
 func ElementObjectTick(statId int16) {
-	var retVal bool
 	stat := &Board.Stats[statId]
 	if stat.DataPos >= 0 {
 		OopExecute(statId, &stat.DataPos, "Interaction")
@@ -839,7 +837,7 @@ func ElementObjectTick(statId int16) {
 		if ElementDefs[Board.Tiles[int16(stat.X)+stat.StepX][int16(stat.Y)+stat.StepY].Element].Walkable {
 			MoveStat(statId, int16(stat.X)+stat.StepX, int16(stat.Y)+stat.StepY)
 		} else {
-			retVal = OopSend(-statId, "THUD", false)
+			OopSend(-statId, "THUD", false)
 		}
 	}
 }
@@ -851,10 +849,9 @@ func ElementObjectDraw(x, y int16, ch *byte) {
 func ElementObjectTouch(x, y int16, sourceStatId int16, deltaX, deltaY *int16) {
 	var (
 		statId int16
-		retVal bool
 	)
 	statId = GetStatIdAt(x, y)
-	retVal = OopSend(-statId, "TOUCH", false)
+	OopSend(-statId, "TOUCH", false)
 }
 
 func ElementDuplicatorTick(statId int16) {
@@ -907,7 +904,6 @@ func ElementScrollTouch(x, y int16, sourceStatId int16, deltaX, deltaY *int16) {
 	var (
 		textWindow TTextWindowState
 		statId     int16
-		unk1       int16
 	)
 	statId = GetStatIdAt(x, y)
 	stat := &Board.Stats[statId]
@@ -1109,7 +1105,6 @@ func DrawPlayerSurroundings(x, y int16, bombPhase int16) {
 	var (
 		ix, iy int16
 		istat  int16
-		result bool
 	)
 	for ix = x - TORCH_DX - 1; ix <= x+TORCH_DX+1; ix++ {
 		if ix >= 1 && ix <= BOARD_WIDTH {
@@ -1121,7 +1116,7 @@ func DrawPlayerSurroundings(x, y int16, bombPhase int16) {
 							if Length(ElementDefs[tile.Element].ParamTextName) != 0 {
 								istat = GetStatIdAt(ix, iy)
 								if istat > 0 {
-									result = OopSend(-istat, "BOMBED", false)
+									OopSend(-istat, "BOMBED", false)
 								}
 							}
 							if ElementDefs[tile.Element].Destructible || tile.Element == E_STAR {
@@ -1160,9 +1155,8 @@ func GamePromptEndPlay() {
 
 func ElementPlayerTick(statId int16) {
 	var (
-		unk1, unk2, unk3 int16
-		i                int16
-		bulletCount      int16
+		i           int16
+		bulletCount int16
 	)
 	stat := &Board.Stats[statId]
 	if World.Info.EnergizerTicks > 0 {
