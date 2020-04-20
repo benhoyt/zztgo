@@ -14,7 +14,7 @@ func OopError(statId int16, message string) {
 func OopReadChar(statId int16, position *int16) {
 	stat := &Board.Stats[statId]
 	if *position >= 0 && *position < stat.DataLen {
-		Move(*Ptr(Seg(*stat.Data), Ofs(*stat.Data)+*position), OopChar, 1)
+		// TODO: fix: Move(*Ptr(Seg(*stat.Data), Ofs(*stat.Data)+*position), OopChar, 1)
 		*position++
 	} else {
 		OopChar = '\x00'
@@ -210,7 +210,7 @@ func OopIterateStat(statId int16, iStat *int16, lookup string) (OopIterateStat b
 		}
 	} else {
 		for *iStat <= Board.StatCount && !found {
-			if Board.Stats[*iStat].Data != nil {
+			if Board.Stats[*iStat].Data != "" {
 				pos = 0
 				OopReadChar(*iStat, &pos)
 				if OopChar == '@' {
@@ -663,18 +663,14 @@ StartParsing:
 					OopReadWord(statId, position)
 					labelStatId = 0
 					for OopFindLabel(statId, OopWord, &labelStatId, &labelDataPos, "\r:") {
-						labelPtr = Board.Stats[labelStatId].Data
-						AdvancePointer(&labelPtr, labelDataPos+1)
-						*labelPtr = '\''
+						Board.Stats[labelStatId].Data = Replace(Board.Stats[labelStatId].Data, labelDataPos+1, '\'')
 					}
 				} else if OopWord == "RESTORE" {
 					OopReadWord(statId, position)
 					labelStatId = 0
 					for OopFindLabel(statId, OopWord, &labelStatId, &labelDataPos, "\r'") {
 						for {
-							labelPtr = Board.Stats[labelStatId].Data
-							AdvancePointer(&labelPtr, labelDataPos+1)
-							*labelPtr = ':'
+							Board.Stats[labelStatId].Data = Replace(Board.Stats[labelStatId].Data, labelDataPos+1, ':')
 							labelDataPos = OopFindString(labelStatId, "\r'"+OopWord+"\r")
 							if labelDataPos <= 0 {
 								break
@@ -812,7 +808,7 @@ StartParsing:
 			}
 		}
 	} else if textWindow.LineCount == 1 {
-		DisplayMessage(200, *textWindow.Lines[0])
+		DisplayMessage(200, textWindow.Lines[0])
 		TextWindowFree(&textWindow)
 	}
 

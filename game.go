@@ -713,7 +713,7 @@ func GameWorldLoad(extension string) (GameWorldLoad bool) {
 	TextWindowSelect(&textWindow, false, false)
 	TextWindowDrawClose(&textWindow)
 	if textWindow.LinePos < textWindow.LineCount && !TextWindowRejected {
-		entryName = *textWindow.Lines[textWindow.LinePos-1]
+		entryName = textWindow.Lines[textWindow.LinePos-1]
 		if Pos(' ', entryName) != 0 {
 			entryName = Copy(entryName, 1, Pos(' ', entryName)-1)
 		}

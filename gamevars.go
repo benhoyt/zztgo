@@ -60,7 +60,7 @@ type (
 		Follower     int16
 		Leader       int16
 		Under        TTile
-		Data         *string
+		Data         string
 		DataPos      int16
 		DataLen      int16
 		unk1, unk2   *uintptr

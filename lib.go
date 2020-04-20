@@ -68,6 +68,11 @@ func Delete(s string, index, count int16) string {
 	return s[:index-1] + s[index-1+count:]
 }
 
+// Replace byte at 1-based index with b and return new string
+func Replace(s string, index int16, b byte) string {
+	return s[:index-1] + string(b) + s[index:]
+}
+
 // Misc functions
 
 var Port [0x202]int16
