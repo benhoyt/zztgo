@@ -14,6 +14,15 @@ const (
 	TORCH_DIST_SQR   = 50
 )
 
+const (
+	SizeOfBoardName        = 50 + 1
+	SizeOfRleTile          = 3
+	SizeOfBoardInfo        = 86
+	SizeOfStat             = 25
+	SizeOfBoardInfoMessage = 58 + 1
+	SizeOfWorldInfo        = 275
+)
+
 type (
 	TString50 string
 	TCoord    struct {
@@ -60,7 +69,7 @@ type (
 		Follower     int16
 		Leader       int16
 		Under        TTile
-		Data         string
+		Data         string // TODO: this should probably be []byte as ZAP/RESTORE modify it
 		DataPos      int16
 		DataLen      int16
 		unk1, unk2   *uintptr
@@ -89,14 +98,14 @@ type (
 		Torches        int16
 		TorchTicks     int16
 		EnergizerTicks int16
-		unk1           int16
+		padding1       int16 // TODO: remove
 		Score          int16
 		Name           string
 		Flags          [MAX_FLAG]string
 		BoardTimeSec   int16
 		BoardTimeHsec  int16
 		IsSave         bool
-		unkPad         [14]byte
+		padding2       [14]byte // TODO: remove
 	}
 	TEditorStatSetting struct {
 		P1, P2, P3   byte
@@ -111,7 +120,7 @@ type (
 	}
 	TWorld struct {
 		BoardCount         int16
-		BoardData          [MAX_BOARD + 1]*uintptr
+		BoardData          [MAX_BOARD + 1][]byte
 		BoardLen           [MAX_BOARD + 1]int16
 		Info               TWorldInfo
 		EditorStatSettings [MAX_ELEMENT + 1]TEditorStatSetting
@@ -154,7 +163,7 @@ var (
 	ReturnBoardId               int16
 	TransitionTableSize         int16
 	TickSpeed                   byte
-	IoTmpBuf                    *TIoTmpBuf
+	IoTmpBuf                    TIoTmpBuf
 	ElementDefs                 [MAX_ELEMENT + 1]TElementDef
 	EditorPatternCount          int16
 	EditorPatterns              [10]byte

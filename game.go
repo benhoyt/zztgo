@@ -1,5 +1,9 @@
 package main // unit: Game
 
+import (
+	"os"
+)
+
 // interface uses: GameVars, TxtWind
 
 const (
@@ -56,19 +60,16 @@ func GenerateTransitionTable() {
 	}
 }
 
-// TODO remove: func AdvancePointer(address **uintptr, count int16) {
-// 	*address = Ptr(Seg(**address), Ofs(**address)+count)
-// }
-
 func BoardClose() {
 	var (
 		ix, iy int16
-		ptr    *uintptr
+		ptr    []byte
 		rle    TRleTile
 	)
-	// TODO: ptr = IoTmpBuf
-	Move(Board.Name, *ptr, 0) // TODO: SizeOf(Board.Name))
-	// TODO: AdvancePointer(&ptr, SizeOf(Board.Name))
+	ptr = IoTmpBuf[:]
+	StoreString(ptr[:SizeOfBoardName], Board.Name)
+	ptr = ptr[SizeOfBoardName:]
+
 	ix = 1
 	iy = 1
 	rle.Count = 1
@@ -82,8 +83,8 @@ func BoardClose() {
 		if Board.Tiles[ix][iy].Color == rle.Tile.Color && Board.Tiles[ix][iy].Element == rle.Tile.Element && rle.Count < 255 && iy <= BOARD_HEIGHT {
 			rle.Count++
 		} else {
-			Move(rle, *ptr, SizeOf(rle))
-			// TODO: AdvancePointer(&ptr, SizeOf(rle))
+			StoreRleTile(ptr[:SizeOfRleTile], rle)
+			ptr = ptr[SizeOfRleTile:]
 			rle.Tile = Board.Tiles[ix][iy]
 			rle.Count = 1
 		}
@@ -91,10 +92,13 @@ func BoardClose() {
 			break
 		}
 	}
-	Move(Board.Info, *ptr, SizeOf(Board.Info))
-	// TODO: AdvancePointer(&ptr, SizeOf(Board.Info))
-	Move(Board.StatCount, *ptr, SizeOf(Board.StatCount))
-	// TODO: AdvancePointer(&ptr, SizeOf(Board.StatCount))
+
+	StoreBoardInfo(ptr[:SizeOfBoardInfo], &Board.Info)
+	ptr = ptr[SizeOfBoardInfo:]
+
+	StoreInt16(ptr[:2], Board.StatCount)
+	ptr = ptr[2:]
+
 	for ix = 0; ix <= Board.StatCount; ix++ {
 		stat := &Board.Stats[ix]
 		if stat.DataLen > 0 {
@@ -104,23 +108,24 @@ func BoardClose() {
 				}
 			}
 		}
-		Move(Board.Stats[ix], *ptr, 0) // TODO: SizeOf(TStat))
-		// TODO: AdvancePointer(&ptr, SizeOf(TStat))
+		StoreStat(ptr[:SizeOfStat], &Board.Stats[ix])
+		ptr = ptr[SizeOfStat:]
+
 		if stat.DataLen > 0 {
-			// TODO: Move(*stat.Data, *ptr, stat.DataLen)
-			FreeMem(stat.Data, stat.DataLen)
-			// TODO: AdvancePointer(&ptr, stat.DataLen)
+			copy(ptr[:stat.DataLen], stat.Data)
+			ptr = ptr[stat.DataLen:]
 		}
 	}
-	FreeMem(World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
-	World.BoardLen[World.Info.CurrentBoard] = Ofs(*ptr) - Ofs(*IoTmpBuf)
-	GetMem(World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
-	Move(*IoTmpBuf, *World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
+
+	boardData := IoTmpBuf[len(IoTmpBuf)-len(ptr):]
+	World.BoardLen[World.Info.CurrentBoard] = int16(len(boardData))
+	World.BoardData[World.Info.CurrentBoard] = make([]byte, len(boardData))
+	copy(World.BoardData[World.Info.CurrentBoard], boardData)
 }
 
 func BoardOpen(boardId int16) {
 	var (
-		ptr    *uintptr
+		ptr    []byte
 		ix, iy int16
 		rle    TRleTile
 	)
@@ -128,15 +133,16 @@ func BoardOpen(boardId int16) {
 		boardId = World.Info.CurrentBoard
 	}
 	ptr = World.BoardData[boardId]
-	Move(*ptr, Board.Name, SizeOf(Board.Name))
-	// TODO: AdvancePointer(&ptr, SizeOf(Board.Name))
+	Board.Name = LoadString(ptr[:SizeOfBoardName])
+	ptr = ptr[SizeOfBoardName:]
+
 	ix = 1
 	iy = 1
 	rle.Count = 0
 	for {
 		if rle.Count <= 0 {
-			Move(*ptr, rle, SizeOf(rle))
-			// TODO: AdvancePointer(&ptr, SizeOf(rle))
+			rle = LoadRleTile(ptr[:SizeOfRleTile])
+			ptr = ptr[SizeOfRleTile:]
 		}
 		Board.Tiles[ix][iy] = rle.Tile
 		ix++
@@ -149,24 +155,28 @@ func BoardOpen(boardId int16) {
 			break
 		}
 	}
-	Move(*ptr, Board.Info, SizeOf(Board.Info))
-	// TODO: AdvancePointer(&ptr, SizeOf(Board.Info))
-	Move(*ptr, Board.StatCount, SizeOf(Board.StatCount))
-	// TODO: AdvancePointer(&ptr, SizeOf(Board.StatCount))
+
+	LoadBoardInfo(ptr[:SizeOfBoardInfo], &Board.Info)
+	ptr = ptr[SizeOfBoardInfo:]
+
+	Board.StatCount = LoadInt16(ptr[:2])
+	ptr = ptr[2:]
+
 	for ix = 0; ix <= Board.StatCount; ix++ {
 		stat := &Board.Stats[ix]
-		Move(*ptr, Board.Stats[ix], 0) // TODO: SizeOf(TStat))
-		// TODO: AdvancePointer(&ptr, SizeOf(TStat))
+		LoadStat(ptr[:SizeOfStat], &Board.Stats[ix])
+		ptr = ptr[SizeOfStat:]
+
 		if stat.DataLen > 0 {
-			GetMem(stat.Data, stat.DataLen)
-			// TODO: Move(*ptr, *stat.Data, stat.DataLen)
-			// TODO: AdvancePointer(&ptr, stat.DataLen)
+			stat.Data = string(ptr[:stat.DataLen])
+			ptr = ptr[stat.DataLen:]
 		} else if stat.DataLen < 0 {
 			stat.Data = Board.Stats[-stat.DataLen].Data
 			stat.DataLen = Board.Stats[-stat.DataLen].DataLen
 		}
 
 	}
+
 	World.Info.CurrentBoard = boardId
 }
 
@@ -523,19 +533,19 @@ func PauseOnError() {
 	Delay(2000)
 }
 
-func DisplayIOError() (DisplayIOError bool) {
+func DisplayIOError(err error) (DisplayIOError bool) {
 	var (
 		textWindow TTextWindowState
 	)
-	if IOResult() == 0 {
+	if err == nil {
 		DisplayIOError = false
 		return
 	}
 	DisplayIOError = true
-	textWindow.Title = Str(IOResult())
-	textWindow.Title = "Error # " + textWindow.Title
+	textWindow.Title = err.Error()[:40]
+	textWindow.Title = "Error: " + textWindow.Title
 	TextWindowInitState(&textWindow)
-	TextWindowAppend(&textWindow, "$DOS Error: ")
+	TextWindowAppend(&textWindow, "OS Error:")
 	TextWindowAppend(&textWindow, "")
 	TextWindowAppend(&textWindow, "This may be caused by missing")
 	TextWindowAppend(&textWindow, "ZZT files or a bad disk.  If")
@@ -551,17 +561,12 @@ func DisplayIOError() (DisplayIOError bool) {
 }
 
 func WorldUnload() {
-	var i int16
 	BoardClose()
-	for i = 0; i <= World.BoardCount; i++ {
-		FreeMem(World.BoardData[i], World.BoardLen[i])
-	}
 }
 
 func WorldLoad(filename, extension string, titleOnly bool) (WorldLoad bool) {
 	var (
-		f            *File
-		ptr          *uintptr
+		ptr          []byte
 		boardId      int16
 		loadProgress int16
 	)
@@ -576,95 +581,117 @@ func WorldLoad(filename, extension string, titleOnly bool) (WorldLoad bool) {
 	SidebarClearLine(5)
 	SidebarClearLine(5)
 	VideoWriteText(62, 5, 0x1F, "Loading.....")
-	Assign(f, filename+extension)
-	Reset(f, 1)
-	if !DisplayIOError() {
-		WorldUnload()
-		BlockRead(f, *IoTmpBuf, 512)
-		if !DisplayIOError() {
-			// TODO: ptr = IoTmpBuf
-			Move(*ptr, World.BoardCount, SizeOf(World.BoardCount))
-			// TODO: AdvancePointer(&ptr, SizeOf(World.BoardCount))
-			if World.BoardCount < 0 {
-				if World.BoardCount != -1 {
-					VideoWriteText(63, 5, 0x1E, "You need a newer")
-					VideoWriteText(63, 6, 0x1E, " version of ZZT!")
-					return
-				} else {
-					Move(*ptr, World.BoardCount, SizeOf(World.BoardCount))
-					// TODO: AdvancePointer(&ptr, SizeOf(World.BoardCount))
-				}
-			}
-			Move(*ptr, World.Info, SizeOf(World.Info))
-			// TODO: AdvancePointer(&ptr, SizeOf(World.Info))
-			if titleOnly {
-				World.BoardCount = 0
-				World.Info.CurrentBoard = 0
-				World.Info.IsSave = true
-			}
-			for boardId = 0; boardId <= World.BoardCount; boardId++ {
-				SidebarAnimateLoading()
-				BlockRead(f, World.BoardLen[boardId], 2)
-				GetMem(World.BoardData[boardId], World.BoardLen[boardId])
-				BlockRead(f, *World.BoardData[boardId], World.BoardLen[boardId])
-			}
-			Close(f)
-			BoardOpen(World.Info.CurrentBoard)
-			LoadedGameFileName = filename
-			WorldLoad = true
-			// TODO: HighScoresLoad()
-			SidebarClearLine(5)
+
+	f, err := os.Open(filename + extension)
+	if DisplayIOError(err) {
+		return
+	}
+	defer f.Close()
+
+	WorldUnload()
+	_, err = f.Read(IoTmpBuf[:512])
+	if DisplayIOError(err) {
+		return
+	}
+
+	ptr = IoTmpBuf[:]
+	World.BoardCount = LoadInt16(ptr[:2])
+	ptr = ptr[2:]
+
+	if World.BoardCount < 0 {
+		if World.BoardCount != -1 {
+			VideoWriteText(63, 5, 0x1E, "You need a newer")
+			VideoWriteText(63, 6, 0x1E, " version of ZZT!")
+			return
+		} else {
+			World.BoardCount = LoadInt16(ptr[:2])
+			ptr = ptr[2:]
 		}
 	}
+
+	LoadWorldInfo(ptr[:SizeOfWorldInfo], &World.Info)
+	ptr = ptr[SizeOfWorldInfo:]
+
+	if titleOnly {
+		World.BoardCount = 0
+		World.Info.CurrentBoard = 0
+		World.Info.IsSave = true
+	}
+
+	for boardId = 0; boardId <= World.BoardCount; boardId++ {
+		SidebarAnimateLoading()
+
+		lenBuf := make([]byte, 2)
+		_, err = f.Read(lenBuf)
+		if DisplayIOError(err) {
+			return
+		}
+		World.BoardLen[boardId] = LoadInt16(lenBuf)
+
+		World.BoardData[boardId] = make([]byte, World.BoardLen[boardId])
+		_, err = f.Read(World.BoardData[boardId])
+		if DisplayIOError(err) {
+			return
+		}
+	}
+
+	BoardOpen(World.Info.CurrentBoard)
+	LoadedGameFileName = filename
+	WorldLoad = true
+	// TODO: HighScoresLoad()
+	SidebarClearLine(5)
+
 	return
 }
 
 func WorldSave(filename, extension string) {
 	var (
-		f       *File
-		i       int16
-		ptr     *uintptr
-		version int16
+		i   int16
+		ptr []byte
 	)
+
 	BoardClose()
+	defer func() {
+		BoardOpen(World.Info.CurrentBoard)
+		SidebarClearLine(5)
+	}()
+
 	VideoWriteText(63, 5, 0x1F, "Saving...")
-	Assign(f, filename+extension)
-	Rewrite(f, 1)
-	if !DisplayIOError() {
-		// TODO: ptr = IoTmpBuf
-		FillChar(*IoTmpBuf, 512, 0)
-		version = -1
-		Move(version, *ptr, SizeOf(version))
-		// TODO: AdvancePointer(&ptr, SizeOf(version))
-		Move(World.BoardCount, *ptr, SizeOf(World.BoardCount))
-		// TODO: AdvancePointer(&ptr, SizeOf(World.BoardCount))
-		Move(World.Info, *ptr, SizeOf(World.Info))
-		// TODO: AdvancePointer(&ptr, SizeOf(World.Info))
-		BlockWrite(f, *IoTmpBuf, 512)
-		if DisplayIOError() {
-			goto OnError
+
+	f, err := os.Create(filename + extension)
+	if DisplayIOError(err) {
+		return
+	}
+	defer f.Close()
+
+	ptr = IoTmpBuf[:]
+	for i := 0; i < 512; i++ {
+		ptr[0] = 0
+	}
+	StoreInt16(ptr[:2], -1)
+	ptr = ptr[2:]
+	StoreInt16(ptr[:2], World.BoardCount)
+	ptr = ptr[2:]
+	StoreWorldInfo(ptr[:SizeOfWorldInfo], &World.Info)
+	ptr = ptr[SizeOfWorldInfo:]
+	_, err = f.Write(IoTmpBuf[:512])
+	if DisplayIOError(err) {
+		return
+	}
+
+	for i = 0; i <= World.BoardCount; i++ {
+		lenBuf := make([]byte, 2)
+		StoreInt16(lenBuf, World.BoardLen[i])
+		_, err = f.Write(lenBuf)
+		if DisplayIOError(err) {
+			return
 		}
-		for i = 0; i <= World.BoardCount; i++ {
-			BlockWrite(f, World.BoardLen[i], 2)
-			if DisplayIOError() {
-				goto OnError
-			}
-			BlockWrite(f, *World.BoardData[i], World.BoardLen[i])
-			if DisplayIOError() {
-				goto OnError
-			}
+
+		_, err = f.Write(World.BoardData[i])
+		if DisplayIOError(err) {
+			return
 		}
 	}
-	BoardOpen(World.Info.CurrentBoard)
-	SidebarClearLine(5)
-	Close(f)
-	return
-OnError:
-	Close(f)
-
-	Erase(f)
-	BoardOpen(World.Info.CurrentBoard)
-	SidebarClearLine(5)
 }
 
 func GameWorldSave(prompt string, filename *string, extension string) {
