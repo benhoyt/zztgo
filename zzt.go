@@ -42,7 +42,13 @@ func main() {
 	SavedBoardFileName = "TEMP"
 	GenerateTransitionTable()
 	WorldCreate()
-	GameTitleLoop()
+
+	//	GameTitleLoop()
+
+	GameTitleExitRequested = false
+	JustStarted = true
+	ReturnBoardId = 0
+	GamePlayLoop(false)
 
 	SoundUninstall()
 	SoundClearQueue()

@@ -77,7 +77,7 @@ func StoreInt16(dest []byte, n int16) {
 
 // Load serialized int16 from src (little endian)
 func LoadInt16(src []byte) int16 {
-	u := uint16(src[0]) | uint16(src[1]<<8)
+	u := uint16(src[0]) | uint16(src[1])<<8
 	return int16(u)
 }
 
@@ -101,6 +101,9 @@ func StoreStat(dest []byte, stat *TStat) {
 	dest[20] = 0
 	StoreInt16(dest[21:23], stat.DataPos)
 	StoreInt16(dest[23:25], stat.DataLen)
+	for i := 25; i < len(dest); i++ {
+		dest[i] = 0
+	}
 }
 
 // Load serialized stat from src

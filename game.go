@@ -783,8 +783,7 @@ func AddStat(tx, ty int16, element byte, color, tcycle int16, template TStat) {
 		stat.Under = Board.Tiles[tx][ty]
 		stat.DataPos = 0
 		if template.Data != "" {
-			GetMem(Board.Stats[Board.StatCount].Data, template.DataLen)
-			// TODO: Move(*template.Data, *Board.Stats[Board.StatCount].Data, template.DataLen)
+			Board.Stats[Board.StatCount].Data = template.Data
 		}
 		if ElementDefs[Board.Tiles[tx][ty].Element].PlaceableOnTop {
 			Board.Tiles[tx][ty].Color = byte(color&0x0F + int16(Board.Tiles[tx][ty].Color)&0x70)
@@ -807,7 +806,7 @@ func RemoveStat(statId int16) {
 				goto StatDataInUse
 			}
 		}
-		FreeMem(stat.Data, stat.DataLen)
+		stat.Data = ""
 	}
 StatDataInUse:
 	if statId < CurrentStatTicked {
@@ -951,7 +950,6 @@ func Signum(val int16) (Signum int16) {
 	} else {
 		Signum = 0
 	}
-
 	return
 }
 
@@ -1322,7 +1320,7 @@ func GamePlayLoop(boardChanged bool) {
 	GameDrawSidebar()
 	GameUpdateSidebar()
 	if JustStarted {
-		GameAboutScreen()
+		// TODO: GameAboutScreen()
 		if Length(StartupWorldFileName) != 0 {
 			SidebarClearLine(8)
 			VideoWriteText(69, 8, 0x1F, StartupWorldFileName)

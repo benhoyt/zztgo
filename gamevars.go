@@ -18,7 +18,7 @@ const (
 	SizeOfBoardName        = 50 + 1
 	SizeOfRleTile          = 3
 	SizeOfBoardInfo        = 86
-	SizeOfStat             = 25
+	SizeOfStat             = 33
 	SizeOfBoardInfoMessage = 58 + 1
 	SizeOfWorldInfo        = 275
 )
