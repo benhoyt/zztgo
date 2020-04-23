@@ -2,6 +2,7 @@ package main // unit: Game
 
 import (
 	"os"
+	"time"
 )
 
 // interface uses: GameVars, TxtWind
@@ -284,8 +285,6 @@ func BoardDrawTile(x, y int16) {
 		} else {
 			if tile.Element == E_TEXT_WHITE {
 				VideoWriteText(x-1, y-1, 0x0F, Chr(Board.Tiles[x][y].Color))
-			} else if VideoMonochrome {
-				VideoWriteText(x-1, y-1, byte((int16(tile.Element-E_TEXT_MIN)+1)*16), Chr(Board.Tiles[x][y].Color))
 			} else {
 				VideoWriteText(x-1, y-1, byte((int16(tile.Element-E_TEXT_MIN)+1)*16+0x0F), Chr(Board.Tiles[x][y].Color))
 			}
@@ -295,6 +294,7 @@ func BoardDrawTile(x, y int16) {
 	} else {
 		VideoWriteText(x-1, y-1, 0x07, "\xb0")
 	}
+	VideoShow() // TODO: very inefficient
 }
 
 func BoardDrawBorder() {
@@ -353,9 +353,9 @@ func SidebarPromptSlider(editable bool, x, y int16, prompt string, value *byte) 
 		newValue           int16
 		startChar, endChar byte
 	)
-	if prompt[Length(prompt)-2] == ';' {
-		startChar = prompt[Length(prompt)-1]
-		endChar = prompt[Length(prompt)]
+	if prompt[Length(prompt)-3] == ';' {
+		startChar = prompt[Length(prompt)-2]
+		endChar = prompt[Length(prompt)-1]
 		prompt = Copy(prompt, 1, Length(prompt)-3)
 	} else {
 		startChar = '1'
@@ -400,7 +400,7 @@ func SidebarPromptChoice(editable bool, y int16, prompt, choiceStr string, resul
 	VideoWriteText(63, y+2, 0x1E, choiceStr)
 	choiceCount = 1
 	for i = 1; i <= Length(choiceStr); i++ {
-		if choiceStr[i] == ' ' {
+		if choiceStr[i-1] == ' ' {
 			choiceCount++
 		}
 	}
@@ -408,7 +408,7 @@ func SidebarPromptChoice(editable bool, y int16, prompt, choiceStr string, resul
 		j = 0
 		i = 1
 		for j < int16(*result) && i < Length(choiceStr) {
-			if choiceStr[i] == ' ' {
+			if choiceStr[i-1] == ' ' {
 				j++
 			}
 			i++
@@ -1319,6 +1319,7 @@ func GamePlayLoop(boardChanged bool) {
 
 	GameDrawSidebar()
 	GameUpdateSidebar()
+
 	if JustStarted {
 		// TODO: GameAboutScreen()
 		if Length(StartupWorldFileName) != 0 {
@@ -1397,6 +1398,9 @@ func GamePlayLoop(boardChanged bool) {
 			}
 		}
 		if CurrentStatTicked > Board.StatCount && !GamePlayExitRequested {
+			time.Sleep(10*time.Millisecond) // TODO
+			VideoShow() // TODO
+
 			if SoundHasTimeElapsed(&TickTimeCounter, TickTimeDuration) {
 				CurrentTick++
 				if CurrentTick > 420 {

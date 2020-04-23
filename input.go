@@ -56,7 +56,7 @@ func InputUpdate() {
 		}
 	}
 	if Length(InputKeyBuffer) != 0 {
-		InputKeyPressed = InputKeyBuffer[1]
+		InputKeyPressed = InputKeyBuffer[0]
 		if Length(InputKeyBuffer) == 1 {
 			InputKeyBuffer = ""
 		} else {

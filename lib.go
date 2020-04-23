@@ -100,35 +100,6 @@ func GetTime(h, m, s, s100 *uint16) {
 
 var Time int16 // TODO
 
-func VideoWriteText(x, y int16, color byte, text string) {
-	// TODO
-}
-
-func VideoMove(x, y, chars int16, data interface{}, toVideo bool) {
-	// TODO
-}
-
-func VideoHideCursor()                        {} // TODO
-func VideoShowCursor()                        {} // TODO
-func VideoInstall(columns, borderColor int16) {} // TODO
-func VideoUninstall()                         {} // TODO
-func ClrScr()                                 {} // TODO
-
-func TextColor(color byte) {
-	// TODO
-}
-
-const (
-	Blue      = 1
-	LightGray = 7
-)
-
-func GotoXY(x, y int16) {
-	// TODO
-}
-
-var VideoMonochrome bool
-
 func Delay(milliseconds int16) {
 	time.Sleep(time.Duration(milliseconds) * time.Millisecond)
 }

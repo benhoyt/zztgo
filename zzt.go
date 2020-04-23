@@ -31,11 +31,11 @@ func main() {
 	GameTitleExitRequested = false
 	EditorEnabled = false
 
-	VideoInstall(80, Blue)
+	VideoInstall()
 	TextWindowInit(5, 3, 50, 18)
 	New(IoTmpBuf)
 	VideoHideCursor()
-	ClrScr()
+	VideoClrScr()
 	TickSpeed = 4
 	DebugEnabled = false
 	SavedGameFileName = "SAVED"
@@ -43,15 +43,14 @@ func main() {
 	GenerateTransitionTable()
 	WorldCreate()
 
-	//	GameTitleLoop()
+	GameTitleLoop()
 
-	GameTitleExitRequested = false
-	JustStarted = true
-	ReturnBoardId = 0
-	GamePlayLoop(false)
+	//GameTitleExitRequested = false
+	//JustStarted = true
+	//ReturnBoardId = 0
+	//GamePlayLoop(false)
 
 	SoundUninstall()
 	SoundClearQueue()
 	VideoUninstall()
-	VideoShowCursor()
 }
