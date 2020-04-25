@@ -297,7 +297,6 @@ func TileToColorAndChar(x, y int16) (color, char byte) {
 func BoardDrawTile(x, y int16) {
 	color, char := TileToColorAndChar(x, y)
 	VideoWriteText(x-1, y-1, color, string([]byte{char}))
-	//VideoShow() // TODO: very inefficient
 }
 
 func BoardDrawBorder() {
@@ -503,6 +502,7 @@ func SidebarPromptYesNo(message string, defaultReturn bool) (SidebarPromptYesNo 
 	SidebarClearLine(5)
 	VideoWriteText(63, 5, 0x1F, message)
 	VideoWriteText(63+Length(message), 5, 0x9E, "_")
+	VideoShow() // TODO
 	for {
 		InputReadWaitKey()
 		if UpCase(InputKeyPressed) == KEY_ESCAPE || UpCase(InputKeyPressed) == 'N' || UpCase(InputKeyPressed) == 'Y' {
@@ -515,6 +515,7 @@ func SidebarPromptYesNo(message string, defaultReturn bool) (SidebarPromptYesNo 
 		defaultReturn = false
 	}
 	SidebarClearLine(5)
+	VideoShow() // TODO
 	SidebarPromptYesNo = defaultReturn
 	return
 }
@@ -1252,10 +1253,8 @@ func GameAboutScreen() {
 }
 
 func GamePlayLoop(boardChanged bool) {
-	var (
-		exitLoop   bool
-		pauseBlink bool
-	)
+	var pauseBlink bool
+
 	GameDrawSidebar := func() {
 		SidebarClear()
 		SidebarClearLine(0)
@@ -1346,10 +1345,9 @@ func GamePlayLoop(boardChanged bool) {
 	}
 	TickTimeDuration = int16(TickSpeed) * 2
 	GamePlayExitRequested = false
-	exitLoop = false
 	CurrentTick = Random(100)
 	CurrentStatTicked = Board.StatCount + 1
-	for {
+	for !GamePlayExitRequested {
 		if GamePaused {
 			if SoundHasTimeElapsed(&TickTimeCounter, 25) {
 				pauseBlink = !pauseBlink
@@ -1411,9 +1409,6 @@ func GamePlayLoop(boardChanged bool) {
 				CurrentStatTicked = 0
 				InputUpdate()
 			}
-		}
-		if (exitLoop || GamePlayExitRequested) && GamePlayExitRequested {
-			break
 		}
 	}
 	SoundClearQueue()

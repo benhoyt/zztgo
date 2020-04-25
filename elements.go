@@ -1321,7 +1321,8 @@ func ElementPlayerTick(statId int16) {
 }
 
 func ElementMonitorTick(statId int16) {
-	if UpCase(InputKeyPressed) == '\x1b' || UpCase(InputKeyPressed) == 'A' || UpCase(InputKeyPressed) == 'E' || UpCase(InputKeyPressed) == 'H' || UpCase(InputKeyPressed) == 'N' || UpCase(InputKeyPressed) == 'P' || UpCase(InputKeyPressed) == 'Q' || UpCase(InputKeyPressed) == 'R' || UpCase(InputKeyPressed) == 'S' || UpCase(InputKeyPressed) == 'W' || UpCase(InputKeyPressed) == '|' {
+	switch UpCase(InputKeyPressed) {
+	case '\x1b', 'A', 'E', 'H', 'N', 'P', 'Q', 'R', 'S', 'W', '|':
 		GamePlayExitRequested = true
 	}
 }

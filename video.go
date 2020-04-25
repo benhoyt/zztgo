@@ -25,6 +25,9 @@ func VideoInstall() {
 		Foreground(tcell.ColorWhite).
 		Background(tcell.ColorBlack))
 	screen.Clear()
+
+	// TODO: doesn't really belong in "video" install, but oh well
+	InputStartPoller(screen)
 }
 
 func VideoClrScr() {
