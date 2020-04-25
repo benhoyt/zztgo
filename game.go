@@ -118,7 +118,7 @@ func BoardClose() {
 		}
 	}
 
-	boardData := IoTmpBuf[len(IoTmpBuf)-len(ptr):]
+	boardData := IoTmpBuf[:len(IoTmpBuf)-len(ptr)]
 	World.BoardLen[World.Info.CurrentBoard] = int16(len(boardData))
 	World.BoardData[World.Info.CurrentBoard] = make([]byte, len(boardData))
 	copy(World.BoardData[World.Info.CurrentBoard], boardData)
@@ -267,34 +267,37 @@ func WorldCreate() {
 func TransitionDrawToFill(chr byte, color int16) {
 	var i int16
 	for i = 1; i <= TransitionTableSize; i++ {
-		VideoWriteText(TransitionTable[i-1].X-1, TransitionTable[i-1].Y-1, byte(color), string(chr))
+		VideoWriteText(TransitionTable[i-1].X-1, TransitionTable[i-1].Y-1, byte(color), string([]byte{chr}))
 	}
 }
 
-func BoardDrawTile(x, y int16) {
+func TileToColorAndChar(x, y int16) (color, char byte) {
 	var ch byte
 	tile := &Board.Tiles[x][y]
 	if !Board.Info.IsDark || ElementDefs[Board.Tiles[x][y].Element].VisibleInDark || World.Info.TorchTicks > 0 && Sqr(int16(Board.Stats[0].X)-x)+Sqr(int16(Board.Stats[0].Y)-y)*2 < TORCH_DIST_SQR || ForceDarknessOff {
 		if tile.Element == E_EMPTY {
-			VideoWriteText(x-1, y-1, 0x0F, " ")
+			return 0x0F, ' '
 		} else if ElementDefs[tile.Element].HasDrawProc {
 			ElementDefs[tile.Element].DrawProc(x, y, &ch)
-			VideoWriteText(x-1, y-1, tile.Color, Chr(ch))
+			return tile.Color, ch
 		} else if tile.Element < E_TEXT_MIN {
-			VideoWriteText(x-1, y-1, tile.Color, string(ElementDefs[tile.Element].Character))
+			return tile.Color, ElementDefs[tile.Element].Character
 		} else {
 			if tile.Element == E_TEXT_WHITE {
-				VideoWriteText(x-1, y-1, 0x0F, Chr(Board.Tiles[x][y].Color))
+				return 0x0F, Board.Tiles[x][y].Color
 			} else {
-				VideoWriteText(x-1, y-1, byte((int16(tile.Element-E_TEXT_MIN)+1)*16+0x0F), Chr(Board.Tiles[x][y].Color))
+				return byte((int16(tile.Element-E_TEXT_MIN)+1)*16 + 0x0F), Board.Tiles[x][y].Color
 			}
-
 		}
-
 	} else {
-		VideoWriteText(x-1, y-1, 0x07, "\xb0")
+		return 0x07, '\xb0'
 	}
-	VideoShow() // TODO: very inefficient
+}
+
+func BoardDrawTile(x, y int16) {
+	color, char := TileToColorAndChar(x, y)
+	VideoWriteText(x-1, y-1, color, string([]byte{char}))
+	//VideoShow() // TODO: very inefficient
 }
 
 func BoardDrawBorder() {
@@ -365,7 +368,7 @@ func SidebarPromptSlider(editable bool, x, y int16, prompt string, value *byte) 
 	VideoWriteText(x, y, byte(BoolToInt(editable)+0x1E), prompt)
 	SidebarClearLine(y + 1)
 	SidebarClearLine(y + 2)
-	VideoWriteText(x, y+2, 0x1E, string(startChar)+"....:...."+string(endChar))
+	VideoWriteText(x, y+2, 0x1E, string([]byte{startChar})+"....:...."+string([]byte{endChar}))
 	for {
 		if editable {
 			VideoWriteText(x+int16(*value)+1, y+1, 0x9F, "\x1f")
@@ -471,13 +474,13 @@ func PromptString(x, y, arrowColor, color, width int16, mode byte, buffer *strin
 			switch mode {
 			case PROMPT_NUMERIC:
 				if InputKeyPressed >= '0' && InputKeyPressed <= '9' {
-					*buffer += string(InputKeyPressed)
+					*buffer += string([]byte{InputKeyPressed})
 				}
 			case PROMPT_ANY:
-				*buffer += string(InputKeyPressed)
+				*buffer += string([]byte{InputKeyPressed})
 			case PROMPT_ALPHANUM:
 				if UpCase(InputKeyPressed) >= 'A' && UpCase(InputKeyPressed) <= 'Z' || InputKeyPressed >= '0' && InputKeyPressed <= '9' || InputKeyPressed == '-' {
-					*buffer += string(UpCase(InputKeyPressed))
+					*buffer += string([]byte{UpCase(InputKeyPressed)})
 				}
 			}
 		} else if InputKeyPressed == KEY_LEFT || InputKeyPressed == KEY_BACKSPACE {
@@ -766,7 +769,7 @@ func CopyStatDataToTextWindow(statId int16, state *TTextWindowState) {
 			TextWindowAppend(state, dataStr)
 			dataStr = ""
 		} else {
-			dataStr += string(dataChr)
+			dataStr += string([]byte{dataChr})
 		}
 		// TODO: AdvancePointer(&dataPtr, 1)
 	}
@@ -1001,7 +1004,7 @@ func GameUpdateSidebar() {
 		}
 		for i = 1; i <= 7; i++ {
 			if World.Info.Keys[i-1] {
-				VideoWriteText(71+i, 12, byte(0x18+i), string(ElementDefs[E_KEY].Character))
+				VideoWriteText(71+i, 12, byte(0x18+i), string([]byte{ElementDefs[E_KEY].Character}))
 			} else {
 				VideoWriteText(71+i, 12, 0x1F, " ")
 			}
@@ -1268,11 +1271,11 @@ func GamePlayLoop(boardChanged bool) {
 			VideoWriteText(64, 10, 0x1E, "   Gems:")
 			VideoWriteText(64, 11, 0x1E, "  Score:")
 			VideoWriteText(64, 12, 0x1E, "   Keys:")
-			VideoWriteText(62, 7, 0x1F, string(ElementDefs[E_PLAYER].Character))
-			VideoWriteText(62, 8, 0x1B, string(ElementDefs[E_AMMO].Character))
-			VideoWriteText(62, 9, 0x16, string(ElementDefs[E_TORCH].Character))
-			VideoWriteText(62, 10, 0x1B, string(ElementDefs[E_GEM].Character))
-			VideoWriteText(62, 12, 0x1F, string(ElementDefs[E_KEY].Character))
+			VideoWriteText(62, 7, 0x1F, string([]byte{ElementDefs[E_PLAYER].Character}))
+			VideoWriteText(62, 8, 0x1B, string([]byte{ElementDefs[E_AMMO].Character}))
+			VideoWriteText(62, 9, 0x16, string([]byte{ElementDefs[E_TORCH].Character}))
+			VideoWriteText(62, 10, 0x1B, string([]byte{ElementDefs[E_GEM].Character}))
+			VideoWriteText(62, 12, 0x1F, string([]byte{ElementDefs[E_KEY].Character}))
 			VideoWriteText(62, 14, 0x70, " T ")
 			VideoWriteText(65, 14, 0x1F, " Torch")
 			VideoWriteText(62, 15, 0x30, " B ")
@@ -1314,7 +1317,6 @@ func GamePlayLoop(boardChanged bool) {
 			// 	VideoWriteText(65, 18, 0x1E, " Board Editor")
 			// }
 		}
-
 	}
 
 	GameDrawSidebar()
@@ -1353,7 +1355,7 @@ func GamePlayLoop(boardChanged bool) {
 				pauseBlink = !pauseBlink
 			}
 			if pauseBlink {
-				VideoWriteText(int16(Board.Stats[0].X)-1, int16(Board.Stats[0].Y)-1, ElementDefs[E_PLAYER].Color, string(ElementDefs[E_PLAYER].Character))
+				VideoWriteText(int16(Board.Stats[0].X)-1, int16(Board.Stats[0].Y)-1, ElementDefs[E_PLAYER].Color, string([]byte{ElementDefs[E_PLAYER].Character}))
 			} else {
 				if Board.Tiles[Board.Stats[0].X][Board.Stats[0].Y].Element == E_PLAYER {
 					VideoWriteText(int16(Board.Stats[0].X)-1, int16(Board.Stats[0].Y)-1, 0x0F, " ")
@@ -1398,8 +1400,8 @@ func GamePlayLoop(boardChanged bool) {
 			}
 		}
 		if CurrentStatTicked > Board.StatCount && !GamePlayExitRequested {
-			time.Sleep(10*time.Millisecond) // TODO
-			VideoShow() // TODO
+			VideoShow()                        // TODO
+			time.Sleep(100 * time.Millisecond) // TODO
 
 			if SoundHasTimeElapsed(&TickTimeCounter, TickTimeDuration) {
 				CurrentTick++

@@ -43,14 +43,39 @@ func main() {
 	GenerateTransitionTable()
 	WorldCreate()
 
+	//if !WorldLoad("TOWN", ".ZZT", true) {
+	//	fmt.Printf("Error loading world\n")
+	//	return
+	//}
+	//for y := 1; y <= 25; y++ {
+	//	for x := 1; x <= 60; x++ {
+	//		BoardDrawTile(int16(x), int16(y))
+	//	}
+	//}
+	//s := TilesToString()
+	//VideoShow()
+	//time.Sleep(5*time.Second)
 	GameTitleLoop()
-
-	//GameTitleExitRequested = false
-	//JustStarted = true
-	//ReturnBoardId = 0
-	//GamePlayLoop(false)
 
 	SoundUninstall()
 	SoundClearQueue()
 	VideoUninstall()
+
+	//fmt.Printf(s)
+}
+
+func TilesToString() string {
+	runes := make([]rune, 61*25)
+	i := 0
+	for y := 1; y <= 25; y++ {
+		for x := 1; x <= 60; x++ {
+			_, c := TileToColorAndChar(int16(x), int16(y))
+			r := codePage437ToRune[c]
+			runes[i] = r
+			i++
+		}
+		runes[i] = '\n'
+		i++
+	}
+	return string(runes)
 }

@@ -17,7 +17,7 @@ func Ord(x byte) byte {
 }
 
 func Chr(x byte) string {
-	return string(x)
+	return string([]byte{x})
 }
 
 func Length(s string) int16 {
@@ -70,7 +70,7 @@ func Delete(s string, index, count int16) string {
 
 // Replace byte at 1-based index with b and return new string
 func Replace(s string, index int16, b byte) string {
-	return s[:index-1] + string(b) + s[index:]
+	return s[:index-1] + string([]byte{b}) + s[index:]
 }
 
 // Misc functions

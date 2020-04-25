@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -61,41 +60,41 @@ func VideoUninstall() {
 }
 
 const (
-	CrtBlack = 0
-	CrtBlue = 1
-	CrtGreen = 2
-	CrtCyan = 3
-	CrtRed = 4
-	CrtMagenta = 5
-	CrtBrown = 6
-	CrtLightGray = 7
-	CrtDarkGray = 8
-	CrtLightBlue = 9
-	CrtLightGreen = 10
-	CrtLightCyan = 11
-	CrtLightRed = 12
+	CrtBlack        = 0
+	CrtBlue         = 1
+	CrtGreen        = 2
+	CrtCyan         = 3
+	CrtRed          = 4
+	CrtMagenta      = 5
+	CrtBrown        = 6
+	CrtLightGray    = 7
+	CrtDarkGray     = 8
+	CrtLightBlue    = 9
+	CrtLightGreen   = 10
+	CrtLightCyan    = 11
+	CrtLightRed     = 12
 	CrtLightMagenta = 13
-	CrtYellow = 14
-	CrtWhite = 15
+	CrtYellow       = 14
+	CrtWhite        = 15
 )
 
 var crtColorToTcell = [16]tcell.Color{
-	CrtBlack:       tcell.ColorBlack,
-	CrtBlue:        tcell.ColorNavy,
-	CrtGreen:       tcell.ColorGreen,
-	CrtCyan:        tcell.ColorTeal,
-	CrtRed:         tcell.ColorMaroon,
+	CrtBlack:        tcell.ColorBlack,
+	CrtBlue:         tcell.ColorNavy,
+	CrtGreen:        tcell.ColorGreen,
+	CrtCyan:         tcell.ColorTeal,
+	CrtRed:          tcell.ColorMaroon,
 	CrtMagenta:      tcell.ColorPurple,
-	CrtBrown:      tcell.ColorOlive,
-	CrtLightGray:       tcell.ColorSilver,
-	CrtDarkGray:        tcell.ColorGray,
-	CrtLightBlue:   tcell.ColorBlue,
-	CrtLightGreen:  tcell.ColorLime,
-	CrtLightCyan:   tcell.ColorAqua,
-	CrtLightRed:    tcell.ColorRed,
+	CrtBrown:        tcell.ColorOlive,
+	CrtLightGray:    tcell.ColorSilver,
+	CrtDarkGray:     tcell.ColorGray,
+	CrtLightBlue:    tcell.ColorBlue,
+	CrtLightGreen:   tcell.ColorLime,
+	CrtLightCyan:    tcell.ColorAqua,
+	CrtLightRed:     tcell.ColorRed,
 	CrtLightMagenta: tcell.ColorFuchsia,
-	CrtYellow: tcell.ColorYellow,
-	CrtWhite:  tcell.ColorWhite,
+	CrtYellow:       tcell.ColorYellow,
+	CrtWhite:        tcell.ColorWhite,
 }
 
 var codePage437ToRune = [256]rune{
