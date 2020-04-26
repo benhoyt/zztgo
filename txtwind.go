@@ -1,4 +1,5 @@
 package main // unit: TxtWind
+import "time"
 
 // interface uses: Video
 
@@ -162,6 +163,7 @@ func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bo
 	state.Hyperlink = ""
 	TextWindowDraw(state, false, viewingFile)
 	for {
+		time.Sleep(100 * time.Millisecond) // TODO
 		InputUpdate()
 		newLinePos = state.LinePos
 		if InputDeltaY != 0 {
