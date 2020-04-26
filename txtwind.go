@@ -500,9 +500,9 @@ func TextWindowInit(x, y, width, height int16) {
 	TextWindowStrSep = " \xc6" + TextWindowStrInnerLine + "\xb5" + " "
 	TextWindowStrText = " \xb3" + TextWindowStrInnerEmpty + "\xb3" + " "
 	TextWindowStrInnerArrows = "\xaf" + TextWindowStrInnerEmpty[1:len(TextWindowStrInnerEmpty)-1] + "\xae"
-	b := []byte(TextWindowStrInnerEmpty + "     ")
-	for i = 1; i <= TextWindowWidth/5; i++ {
-		b[i*5+TextWindowWidth%5/2-1] = '\x07'
+	b := []byte(TextWindowStrInnerEmpty)
+	for i = 1; i < TextWindowWidth/5; i++ {
+		b[i*5+(TextWindowWidth%5)/2-1] = '\x07'
 	}
 	TextWindowStrInnerSep = string(b)
 }
