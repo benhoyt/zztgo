@@ -227,7 +227,7 @@ func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bo
 		if newLinePos != state.LinePos {
 			state.LinePos = newLinePos
 			TextWindowDraw(state, false, viewingFile)
-			if state.Lines[state.LinePos-1][0] == '!' {
+			if Length(state.Lines[state.LinePos-1]) != 0 && state.Lines[state.LinePos-1][0] == '!' {
 				if hyperlinkAsSelect {
 					TextWindowDrawTitle(0x1E, "\xaePress ENTER to select this\xaf")
 				} else {

@@ -14,7 +14,7 @@ func OopError(statId int16, message string) {
 func OopReadChar(statId int16, position *int16) {
 	stat := &Board.Stats[statId]
 	if *position >= 0 && *position < stat.DataLen {
-		// TODO: fix: Move(*Ptr(Seg(*stat.Data), Ofs(*stat.Data)+*position), OopChar, 1)
+		OopChar = stat.Data[*position]
 		*position++
 	} else {
 		OopChar = '\x00'

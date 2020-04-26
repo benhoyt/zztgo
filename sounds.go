@@ -260,14 +260,18 @@ func SoundParse(input string) (SoundParse string) {
 				noteTone = 11
 				AdvanceInput()
 			}
-			switch UpCase(input[0]) {
-			case '!':
-				noteTone--
-				AdvanceInput()
-			case '#':
-				noteTone++
-				AdvanceInput()
+
+			if Length(input) != 0 {
+				switch UpCase(input[0]) {
+				case '!':
+					noteTone--
+					AdvanceInput()
+				case '#':
+					noteTone++
+					AdvanceInput()
+				}
 			}
+
 			output += Chr(byte(noteOctave*0x10+noteTone)) + Chr(byte(noteDuration))
 		case 'X':
 			output += "\x00" + Chr(byte(noteDuration))
