@@ -770,7 +770,8 @@ StartParsing:
 		} else if OopChar == '\x00' {
 			endOfProgram = true
 		} else {
-			textLine = string([]byte{OopChar}) + OopReadLineToEnd(statId, position)
+			textLine = string([]byte{OopChar})
+			textLine += OopReadLineToEnd(statId, position)
 			TextWindowAppend(&textWindow, textLine)
 		}
 
