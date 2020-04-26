@@ -44,6 +44,7 @@ func VideoWriteText(x, y int16, color byte, text string) {
 		r := codePage437ToRune[ch]
 		screen.SetContent(int(x)+i, int(y), r, nil, style)
 	}
+	VideoShow() // TODO: is this inefficient?
 }
 
 func VideoMove(x, y, chars int16, data interface{}, toVideo bool) {

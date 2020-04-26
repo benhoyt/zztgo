@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"math"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -40,6 +42,12 @@ func UpCaseString(input string) string {
 }
 
 func Copy(s string, index, count int16) string {
+	if index < 1 {
+		index = 1
+	}
+	if count > int16(len(s))-index+1 {
+		count = int16(len(s)) - index + 1
+	}
 	return s[index-1 : index-1+count]
 }
 
@@ -48,22 +56,54 @@ func Pos(b byte, s string) int16 {
 }
 
 func Val(s string, code *int16) int16 {
-	// TODO: code should be 1-based position of first non-number char
-	*code = 0
-	return 0
+	// Skip leading spaces
+	orig := s
+	for len(s) > 0 && s[0] == ' ' {
+		s = s[1:]
+	}
+
+	// Handle '-' or '+' sign
+	negative := false
+	if len(s) > 0 {
+		switch s[0] {
+		case '-':
+			negative = true
+			s = s[1:]
+		case '+':
+			s = s[1:]
+		}
+	}
+
+	// Convert decimal digits
+	val := int16(0)
+	gotDigits := false
+	for len(s) > 0 && s[0] >= '0' && s[0] <= '9' {
+		val = val*10 + int16(s[0]-'0')
+		gotDigits = true
+		s = s[1:]
+	}
+
+	// Error if we didn't get any digits or there are chars left
+	if !gotDigits || len(s) > 0 {
+		*code = int16(len(orig) - len(s) + 1)
+		return 0
+	}
+
+	if negative {
+		val = -val
+	}
+	*code = 0 // Code of zero means no error
+	return val
 }
 
 func Str(n int16) string {
-	// TODO
-	return ""
+	return strconv.Itoa(int(n))
 }
 
 func StrWidth(n, width int16) string {
-	// TODO
-	return ""
+	return fmt.Sprintf("%*d", width, n)
 }
 
-// NOTE: in Turbo Pascal Delete() is a procedure that modifies the string in-place
 func Delete(s string, index, count int16) string {
 	return s[:index-1] + s[index-1+count:]
 }

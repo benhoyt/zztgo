@@ -502,7 +502,6 @@ func SidebarPromptYesNo(message string, defaultReturn bool) (SidebarPromptYesNo 
 	SidebarClearLine(5)
 	VideoWriteText(63, 5, 0x1F, message)
 	VideoWriteText(63+Length(message), 5, 0x9E, "_")
-	VideoShow() // TODO
 	for {
 		InputReadWaitKey()
 		if UpCase(InputKeyPressed) == KEY_ESCAPE || UpCase(InputKeyPressed) == 'N' || UpCase(InputKeyPressed) == 'Y' {
@@ -515,7 +514,6 @@ func SidebarPromptYesNo(message string, defaultReturn bool) (SidebarPromptYesNo 
 		defaultReturn = false
 	}
 	SidebarClearLine(5)
-	VideoShow() // TODO
 	SidebarPromptYesNo = defaultReturn
 	return
 }
@@ -1398,7 +1396,6 @@ func GamePlayLoop(boardChanged bool) {
 			}
 		}
 		if CurrentStatTicked > Board.StatCount && !GamePlayExitRequested {
-			VideoShow()                        // TODO
 			time.Sleep(100 * time.Millisecond) // TODO
 
 			if SoundHasTimeElapsed(&TickTimeCounter, TickTimeDuration) {
