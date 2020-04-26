@@ -224,15 +224,9 @@ func EditorLoop() {
 		state.LineCount = 9
 		state.Selectable = true
 		exitRequested = false
-		for i = 1; i <= state.LineCount; i++ {
-			New(state.Lines[i-1])
-		}
 		for {
 			state.Selectable = true
 			state.LineCount = 10
-			for i = 1; i <= state.LineCount; i++ {
-				New(state.Lines[i-1])
-			}
 			*state.Lines[0] = "         Title: " + Board.Name
 			numStr = Str(int16(Board.Info.MaxShots))
 			*state.Lines[1] = "      Can fire: " + numStr + " shots."
@@ -307,14 +301,12 @@ func EditorLoop() {
 		state.Selectable = false
 		CopyStatDataToTextWindow(statId, &state)
 		if stat.DataLen > 0 {
-			FreeMem(stat.Data, stat.DataLen)
 			stat.DataLen = 0
 		}
 		EditorOpenEditTextWindow(&state)
 		for iLine = 1; iLine <= state.LineCount; iLine++ {
 			stat.DataLen += Length(*state.Lines[iLine-1]) + 1
 		}
-		GetMem(stat.Data, stat.DataLen)
 		dataPtr = stat.Data
 		for iLine = 1; iLine <= state.LineCount; iLine++ {
 			for iChar = 1; iChar <= Length(*state.Lines[iLine-1]); iChar++ {
@@ -454,10 +446,9 @@ func EditorLoop() {
 						goto TransferEnd
 					}
 					BoardClose()
-					FreeMem(World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
 					BlockRead(f, World.BoardLen[World.Info.CurrentBoard], 2)
 					if !DisplayIOError() {
-						GetMem(World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
+						World.BoardData[World.Info.CurrentBoard] = make([]byte, World.BoardLen[World.Info.CurrentBoard])
 						BlockRead(f, *World.BoardData[World.Info.CurrentBoard], World.BoardLen[World.Info.CurrentBoard])
 					}
 					if DisplayIOError() {
@@ -963,20 +954,14 @@ func HighScoresAdd(score int16) {
 }
 
 func EditorGetBoardName(boardId int16, titleScreenIsNone bool) (EditorGetBoardName string) {
-	var (
-		boardData  *uintptr
-		copiedName string
-	)
 	if boardId == 0 && titleScreenIsNone {
 		EditorGetBoardName = "None"
 	} else if boardId == World.Info.CurrentBoard {
 		EditorGetBoardName = Board.Name
 	} else {
-		boardData = World.BoardData[boardId]
-		Move(*boardData, copiedName, SizeOf(copiedName))
-		EditorGetBoardName = copiedName
+		boardData := World.BoardData[boardId]
+		EditorGetBoardName = LoadString(boardData[:SizeOfBoardName])
 	}
-
 	return
 }
 

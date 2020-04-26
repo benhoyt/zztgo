@@ -115,29 +115,6 @@ func Replace(s string, index int16, b byte) string {
 
 // Misc functions
 
-var Port [0x202]int16
-
-type Registers struct {
-	AX, BX, CX, DX uint16
-	AL, AH         byte
-}
-
-func Intr(n byte, regs Registers) {
-	// TODO
-}
-
-func GetIntVec(n byte, ptr interface{}) {
-	// TODO
-}
-
-func SetIntVec(n byte, ptr interface{}) {
-	// TODO
-}
-
-func GetTime(h, m, s, s100 *uint16) {
-	// TODO
-}
-
 var Time int16 // TODO
 
 func Delay(milliseconds int16) {
@@ -280,49 +257,4 @@ func FindFirst(pattern string, typ byte, rec interface{}) {
 
 func FindNext(rec interface{}) {
 	// TODO
-}
-
-// Memory functions
-
-var MemAvail int16 = 32767
-
-func New(p interface{}) {
-	// TODO
-}
-
-func Dispose(p interface{}) {
-	// TODO -- do nothing
-}
-
-func FreeMem(p interface{}, size int16) {
-	// TODO
-}
-
-func GetMem(p interface{}, size int16) {
-	// TODO
-}
-
-func Move(src, dest interface{}, size int16) {
-	// TODO
-}
-
-func SizeOf(val interface{}) int16 {
-	// TODO
-	return 0
-}
-
-func FillChar(dest interface{}, count int16, c byte) {
-	// TODO
-}
-
-func Ptr(seg, ofs int16) uintptr {
-	return 0 // TODO
-}
-
-func Seg(seg interface{}) int16 {
-	return 0
-}
-
-func Ofs(ofs interface{}) int16 {
-	return 0
 }

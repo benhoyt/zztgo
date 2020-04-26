@@ -752,25 +752,18 @@ func GameWorldLoad(extension string) (GameWorldLoad bool) {
 }
 
 func CopyStatDataToTextWindow(statId int16, state *TTextWindowState) {
-	var (
-		dataStr string
-		dataPtr *uintptr
-		dataChr byte
-		i       int16
-	)
 	stat := &Board.Stats[statId]
 	TextWindowInitState(state)
-	dataStr = ""
-	dataPtr = nil // TODO: stat.Data
-	for i = 0; i <= stat.DataLen; i++ {
-		Move(*dataPtr, dataChr, 1)
+
+	var dataBuf []byte
+	for i := 0; i < int(stat.DataLen); i++ {
+		dataChr := stat.Data[i]
 		if dataChr == KEY_ENTER {
-			TextWindowAppend(state, dataStr)
-			dataStr = ""
+			TextWindowAppend(state, string(dataBuf))
+			dataBuf = dataBuf[:0]
 		} else {
-			dataStr += string([]byte{dataChr})
+			dataBuf = append(dataBuf, dataChr)
 		}
-		// TODO: AdvancePointer(&dataPtr, 1)
 	}
 }
 
@@ -1012,10 +1005,6 @@ func GameUpdateSidebar() {
 			VideoWriteText(65, 15, 0x1F, " Be quiet")
 		} else {
 			VideoWriteText(65, 15, 0x1F, " Be noisy")
-		}
-		if DebugEnabled {
-			numStr = Str(MemAvail)
-			VideoWriteText(69, 4, 0x1E, "m"+numStr+" ")
 		}
 	}
 }

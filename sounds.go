@@ -111,13 +111,13 @@ func SoundPlayDrum(drum *TDrumData) {
 }
 
 func SoundCheckTimeIntr() {
-	var hour, minute, sec, hSec uint16
-	GetTime(&hour, &minute, &sec, &hSec)
-	if SoundTimeCheckHsec != 0 && int16(hSec) != SoundTimeCheckHsec {
-		SoundTimeCheckCounter = 0
-		UseSystemTimeForElapsed = true
-	}
-	SoundTimeCheckHsec = int16(hSec)
+	//var hour, minute, sec, hSec uint16
+	//GetTime(&hour, &minute, &sec, &hSec)
+	//if SoundTimeCheckHsec != 0 && int16(hSec) != SoundTimeCheckHsec {
+	//	SoundTimeCheckCounter = 0
+	//	UseSystemTimeForElapsed = true
+	//}
+	//SoundTimeCheckHsec = int16(hSec)
 }
 
 func SoundHasTimeElapsed(counter *int16, duration int16) (SoundHasTimeElapsed bool) {

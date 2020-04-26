@@ -5,6 +5,8 @@ package main // unit: TxtWind
 const (
 	MAX_TEXT_WINDOW_LINES   = 1024
 	MAX_RESOURCE_DATA_FILES = 24
+
+	SizeOfResourceDataHeader = 2 + MAX_RESOURCE_DATA_FILES*(51+4)
 )
 
 type (
@@ -142,15 +144,11 @@ func TextWindowDraw(state *TTextWindowState, withoutFormatting, viewingFile bool
 
 func TextWindowAppend(state *TTextWindowState, line string) {
 	state.LineCount++
-	New(state.Lines[state.LineCount-1])
 	state.Lines[state.LineCount-1] = line
 }
 
 func TextWindowFree(state *TTextWindowState) {
-	for state.LineCount > 0 {
-		Dispose(state.Lines[state.LineCount-1])
-		state.LineCount--
-	}
+	state.LineCount = 0
 	state.LoadedFilename = ""
 }
 
@@ -257,7 +255,6 @@ func TextWindowEdit(state *TTextWindowState) {
 	DeleteCurrLine := func() {
 		var i int16
 		if state.LineCount > 1 {
-			Dispose(state.Lines[state.LinePos-1])
 			for i = state.LinePos + 1; i <= state.LineCount; i++ {
 				state.Lines[i-1-1] = state.Lines[i-1]
 			}
@@ -319,7 +316,6 @@ func TextWindowEdit(state *TTextWindowState) {
 				for i = state.LineCount; i >= state.LinePos+1; i-- {
 					state.Lines[i+1-1] = state.Lines[i-1]
 				}
-				New(state.Lines[state.LinePos+1-1])
 				state.Lines[state.LinePos+1-1] = Copy(state.Lines[state.LinePos-1], charPos, Length(state.Lines[state.LinePos-1])-charPos+1)
 				state.Lines[state.LinePos-1] = Copy(state.Lines[state.LinePos-1], 1, charPos-1)
 				newLinePos = state.LinePos + 1
@@ -372,7 +368,6 @@ func TextWindowEdit(state *TTextWindowState) {
 		}
 	}
 	if Length(state.Lines[state.LineCount-1]) == 0 {
-		Dispose(state.Lines[state.LineCount-1])
 		state.LineCount--
 	}
 }
@@ -406,7 +401,7 @@ func TextWindowOpenFile(filename string, state *TTextWindowState) {
 		Assign(f, ResourceDataFileName)
 		Reset(f, 1)
 		if IOResult() == 0 {
-			BlockRead(f, ResourceDataHeader, SizeOf(ResourceDataHeader))
+			BlockRead(f, ResourceDataHeader, SizeOfResourceDataHeader)
 		}
 		if IOResult() != 0 {
 			ResourceDataHeader.EntryCount = -1
@@ -425,7 +420,6 @@ func TextWindowOpenFile(filename string, state *TTextWindowState) {
 		Reset(tf)
 		for IOResult() == 0 && !Eof(tf) {
 			state.LineCount++
-			New(state.Lines[state.LineCount-1])
 			ReadLn(tf, state.Lines[state.LineCount-1])
 		}
 		Close(tf)
@@ -437,7 +431,6 @@ func TextWindowOpenFile(filename string, state *TTextWindowState) {
 			retVal = true
 			for IOResult() == 0 && retVal {
 				state.LineCount++
-				New(state.Lines[state.LineCount-1])
 				BlockRead(f, state.Lines[state.LineCount-1], 1)
 				line = &state.Lines[state.LineCount-1] // TODO what did this do?: Ptr(Seg(state.Lines[state.LineCount-1]), Ofs(state.Lines[state.LineCount-1])+1)
 				lineLen = byte(len(state.Lines[state.LineCount-1]))

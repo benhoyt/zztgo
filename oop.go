@@ -744,7 +744,6 @@ StartParsing:
 					OopReadWord(statId, position)
 					bindStatId = 0
 					if OopIterateStat(statId, &bindStatId, OopWord) {
-						FreeMem(stat.Data, stat.DataLen)
 						stat.Data = Board.Stats[bindStatId].Data
 						stat.DataLen = Board.Stats[bindStatId].DataLen
 						*position = 0
