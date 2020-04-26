@@ -19,7 +19,7 @@ type (
 		Hyperlink      string
 		Title          string
 		LoadedFilename string
-		ScreenCopy     [25]string
+		ScreenCopy     [25][80]VideoCell
 	}
 	TResourceDataHeader struct {
 		EntryCount int16
@@ -60,7 +60,7 @@ func TextWindowDrawTitle(color int16, title string) {
 func TextWindowDrawOpen(state *TTextWindowState) {
 	var iy int16
 	for iy = 1; iy <= TextWindowHeight+1; iy++ {
-		VideoMove(TextWindowX, iy+TextWindowY-1, TextWindowWidth, &state.ScreenCopy[iy-1], false)
+		VideoMoveToBuffer(TextWindowX, iy+TextWindowY-1, TextWindowWidth, state.ScreenCopy[iy-1][:])
 	}
 	for iy = TextWindowHeight / 2; iy >= 0; iy-- {
 		VideoWriteText(TextWindowX, TextWindowY+iy+1, 0x0F, TextWindowStrText)
@@ -81,8 +81,8 @@ func TextWindowDrawClose(state *TTextWindowState) {
 		VideoWriteText(TextWindowX, TextWindowY+iy, 0x0F, TextWindowStrTop)
 		VideoWriteText(TextWindowX, TextWindowY+TextWindowHeight-iy, 0x0F, TextWindowStrBottom)
 		Delay(18)
-		VideoMove(TextWindowX, TextWindowY+iy, TextWindowWidth, &state.ScreenCopy[iy+1-1], true)
-		VideoMove(TextWindowX, TextWindowY+TextWindowHeight-iy, TextWindowWidth, &state.ScreenCopy[TextWindowHeight-iy+1-1], true)
+		VideoMoveToVideo(TextWindowX, TextWindowY+iy, TextWindowWidth, state.ScreenCopy[iy+1-1][:])
+		VideoMoveToVideo(TextWindowX, TextWindowY+TextWindowHeight-iy, TextWindowWidth, state.ScreenCopy[TextWindowHeight-iy+1-1][:])
 	}
 }
 
