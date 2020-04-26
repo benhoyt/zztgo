@@ -2,11 +2,6 @@
 
 package main
 
-import (
-	"math/rand"
-	"time"
-)
-
 func main() {
 	WorldFileDescCount = 7
 	WorldFileDescKeys[0] = "TOWN"
@@ -24,8 +19,6 @@ func main() {
 	WorldFileDescKeys[6] = "TOUR"
 	WorldFileDescValues[6] = "TOUR       Guided Tour ZZT's Other Worlds"
 
-	rand.Seed(time.Now().UnixNano())
-
 	StartupWorldFileName = "TOWN"
 	ResourceDataFileName = "ZZT.DAT"
 	GameTitleExitRequested = false
@@ -33,7 +26,6 @@ func main() {
 
 	VideoInstall()
 	TextWindowInit(5, 3, 50, 18)
-	New(IoTmpBuf)
 	VideoHideCursor()
 	VideoClrScr()
 	TickSpeed = 4
