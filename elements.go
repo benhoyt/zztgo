@@ -1279,8 +1279,6 @@ func ElementPlayerTick(statId int16) {
 		InputKeyPressed = ' '
 	case 'H':
 		TextWindowDisplayFile("GAME.HLP", "Playing ZZT")
-	case 'F':
-		TextWindowDisplayFile("ORDER.HLP", "Order form")
 	case '?':
 		GameDebugPrompt()
 		InputKeyPressed = '\x00'

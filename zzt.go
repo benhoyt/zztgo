@@ -3,7 +3,6 @@
 /*
 TODO:
 - shift keys for shooting etc
-- resource file loading: TextWindowOpenFile
 - timer handling, timeout of message display
 - FindFirst/FindNext for GameWorldLoad
 - high scores load/save

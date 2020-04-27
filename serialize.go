@@ -81,6 +81,12 @@ func LoadInt16(src []byte) int16 {
 	return int16(u)
 }
 
+// Load serialized int32 from src (little endian)
+func LoadInt32(src []byte) int32 {
+	u := uint32(src[0]) | uint32(src[1])<<8 | uint32(src[2])<<16 | uint32(src[3])<<24
+	return int32(u)
+}
+
 // Serialize stat to dest
 func StoreStat(dest []byte, stat *TStat) {
 	dest[0] = stat.X
@@ -169,4 +175,17 @@ func LoadWorldInfo(src []byte, info *TWorldInfo) {
 	info.BoardTimeSec = LoadInt16(src[256:258])
 	info.BoardTimeHsec = LoadInt16(src[258:260])
 	info.IsSave = src[260] != 0
+}
+
+func LoadResourceDataHeader(src []byte, header *TResourceDataHeader) {
+	header.EntryCount = LoadInt16(src[:2])
+	src = src[2:]
+	for i := 0; i < len(header.Name); i++ {
+		header.Name[i] = LoadString(src[:51])
+		src = src[51:]
+	}
+	for i := 0; i < len(header.FileOffset); i++ {
+		header.FileOffset[i] = LoadInt32(src[:4])
+		src = src[4:]
+	}
 }

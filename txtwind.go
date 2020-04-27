@@ -1,5 +1,13 @@
 package main // unit: TxtWind
-import "time"
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+	"strings"
+	"time"
+)
 
 // interface uses: Video
 
@@ -375,14 +383,12 @@ func TextWindowEdit(state *TTextWindowState) {
 
 func TextWindowOpenFile(filename string, state *TTextWindowState) {
 	var (
-		f        *File
-		tf       *File
 		i        int16
 		entryPos int16
 		retVal   bool
-		line     *string
 		lineLen  byte
 	)
+
 	retVal = true
 	for i = 1; i <= Length(filename); i++ {
 		retVal = retVal && filename[i-1] != '.'
@@ -390,25 +396,32 @@ func TextWindowOpenFile(filename string, state *TTextWindowState) {
 	if retVal {
 		filename += ".HLP"
 	}
+
 	if filename[0] == '*' {
 		filename = Copy(filename, 2, Length(filename)-1)
 		entryPos = -1
 	} else {
 		entryPos = 0
 	}
+
 	TextWindowInitState(state)
 	state.LoadedFilename = UpCaseString(filename)
+
 	if ResourceDataHeader.EntryCount == 0 {
-		Assign(f, ResourceDataFileName)
-		Reset(f, 1)
-		if IOResult() == 0 {
-			BlockRead(f, ResourceDataHeader, SizeOfResourceDataHeader)
+		f, err := os.Open(ResourceDataFileName)
+		if err == nil {
+			buf := make([]byte, SizeOfResourceDataHeader)
+			_, err = f.Read(buf)
+			if err == nil {
+				LoadResourceDataHeader(buf, &ResourceDataHeader)
+			}
 		}
-		if IOResult() != 0 {
+		if err != nil {
 			ResourceDataHeader.EntryCount = -1
 		}
-		Close(f)
+		f.Close()
 	}
+
 	if entryPos == 0 {
 		for i = 1; i <= ResourceDataHeader.EntryCount; i++ {
 			if UpCaseString(ResourceDataHeader.Name[i-1]) == UpCaseString(filename) {
@@ -416,57 +429,69 @@ func TextWindowOpenFile(filename string, state *TTextWindowState) {
 			}
 		}
 	}
+
 	if entryPos <= 0 {
-		Assign(tf, filename)
-		Reset(tf)
-		for IOResult() == 0 && !Eof(tf) {
-			state.LineCount++
-			ReadLn(tf, state.Lines[state.LineCount-1])
+		f, err := os.Open(filename)
+		var reader *bufio.Reader
+		if err == nil {
+			reader = bufio.NewReader(f)
 		}
-		Close(tf)
-	} else {
-		Assign(f, ResourceDataFileName)
-		Reset(f, 1)
-		Seek(f, int16(ResourceDataHeader.FileOffset[entryPos-1]))
-		if IOResult() == 0 {
-			retVal = true
-			for IOResult() == 0 && retVal {
+		for err == nil {
+			var line string
+			line, err = reader.ReadString('\n')
+			if err != io.EOF {
+				line = strings.TrimRight(line, "\r\n")
 				state.LineCount++
-				BlockRead(f, state.Lines[state.LineCount-1], 1)
-				line = &state.Lines[state.LineCount-1] // TODO what did this do?: Ptr(Seg(state.Lines[state.LineCount-1]), Ofs(state.Lines[state.LineCount-1])+1)
-				lineLen = byte(len(state.Lines[state.LineCount-1]))
+				state.Lines[state.LineCount-1] = line
+			}
+		}
+		f.Close()
+	} else {
+		f, err := os.Open(ResourceDataFileName)
+		if err == nil {
+			f.Seek(int64(ResourceDataHeader.FileOffset[entryPos-1]), io.SeekStart)
+		}
+		if err == nil {
+			retVal = true
+			for err == nil && retVal {
+				state.LineCount++
+
+				lenBuf := make([]byte, 1)
+				_, err = f.Read(lenBuf)
+				lineLen = lenBuf[0]
+
 				if lineLen == 0 {
 					state.Lines[state.LineCount-1] = ""
 				} else {
-					BlockRead(f, *line, int16(len(state.Lines[state.LineCount-1])))
+					lineBuf := make([]byte, lineLen)
+					_, err = f.Read(lineBuf)
+					state.Lines[state.LineCount-1] = string(lineBuf)
 				}
 				if state.Lines[state.LineCount-1] == "@" {
 					retVal = false
 					state.Lines[state.LineCount-1] = ""
 				}
 			}
-			Close(f)
+			f.Close()
 		}
 	}
 }
 
 func TextWindowSaveFile(filename string, state *TTextWindowState) {
-	var (
-		f *File
-		i int16
-	)
-	Assign(f, filename)
-	Rewrite(f)
-	if IOResult() != 0 {
+	var i int16
+
+	f, err := os.Create(filename)
+	if err != nil {
 		return
 	}
+	defer f.Close()
+
 	for i = 1; i <= state.LineCount; i++ {
-		WriteLn(f, state.Lines[i-1])
-		if IOResult() != 0 {
+		_, err = fmt.Fprintln(f, state.Lines[i-1])
+		if err != nil {
 			return
 		}
 	}
-	Close(f)
 }
 
 func TextWindowDisplayFile(filename, title string) {
