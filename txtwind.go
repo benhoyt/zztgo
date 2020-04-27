@@ -169,7 +169,6 @@ func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bo
 		if InputDeltaY != 0 {
 			newLinePos += InputDeltaY
 		} else if InputShiftPressed || InputKeyPressed == KEY_ENTER {
-			InputShiftAccepted = true
 			if state.Lines[state.LinePos-1][0] == '!' {
 				pointerStr = Copy(state.Lines[state.LinePos-1], 2, Length(state.Lines[state.LinePos-1])-1)
 				if Pos(';', pointerStr) > 0 {

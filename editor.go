@@ -579,7 +579,6 @@ func EditorLoop() {
 		}
 		tile := &Board.Tiles[cursorX][cursorY]
 		if InputShiftPressed || InputKeyPressed == ' ' {
-			InputShiftAccepted = true
 			if tile.Element == 0 || ElementDefs[tile.Element].PlaceableOnTop && copiedHasStat && cursorPattern > EditorPatternCount || InputDeltaX != 0 || InputDeltaY != 0 {
 				EditorPlaceTile(cursorX, cursorY)
 			} else {
@@ -605,7 +604,6 @@ func EditorLoop() {
 				cursorY = BOARD_HEIGHT
 			}
 			VideoWriteText(cursorX-1, cursorY-1, 0x0F, "\xc5")
-			InputShiftAccepted = false
 		}
 		switch UpCase(InputKeyPressed) {
 		case '`':

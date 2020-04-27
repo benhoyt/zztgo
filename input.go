@@ -29,8 +29,9 @@ const (
 var (
 	InputDeltaX, InputDeltaY int16
 	InputShiftPressed        bool
-	InputShiftAccepted       bool
 	InputKeyPressed          byte
+
+	KeysShiftHeld bool
 
 	keyChan chan byte
 )
@@ -102,7 +103,6 @@ func InputUpdateWithKey(keyRead byte) {
 		InputKeyPressed = '\x00'
 	}
 	if InputDeltaX != 0 || InputDeltaY != 0 {
-		KeysUpdateModifiers()
 		InputShiftPressed = KeysShiftHeld
 	}
 	if InputDeltaX != 0 || InputDeltaY != 0 {
@@ -126,6 +126,9 @@ func InputKeyPoller(screen tcell.Screen, keyChan chan byte) {
 		event := screen.PollEvent()
 		switch event := event.(type) {
 		case *tcell.EventKey:
+			// TODO: this doesn't work for shift-up and shift-down in tcell :-(
+			KeysShiftHeld = event.Modifiers()&tcell.ModShift != 0
+
 			switch event.Key() {
 			case tcell.KeyRune:
 				r := event.Rune()
@@ -172,6 +175,5 @@ func init() {
 	InputDeltaX = 0
 	InputDeltaY = 0
 	InputShiftPressed = false
-	InputShiftAccepted = false
 	InputKeyBuffer = ""
 }
