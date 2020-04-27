@@ -826,65 +826,6 @@ func EditorLoop() {
 	InitElementsGame()
 }
 
-func HighScoresLoad() {
-	var (
-		f *File
-		i int16
-	)
-	Assign(f, World.Info.Name+".HI")
-	Reset(f)
-	if IOResult() == 0 {
-		Read(f, HighScoreList)
-	}
-	Close(f)
-	if IOResult() != 0 {
-		for i = 1; i <= 30; i++ {
-			HighScoreList[i-1].Name = ""
-			HighScoreList[i-1].Score = -1
-		}
-	}
-}
-
-func HighScoresSave() {
-	var f *File
-	Assign(f, World.Info.Name+".HI")
-	Rewrite(f)
-	Write(f, HighScoreList)
-	Close(f)
-	if DisplayIOError() {
-	} else {
-	}
-}
-
-func HighScoresInitTextWindow(state *TTextWindowState) {
-	var (
-		i        int16
-		scoreStr string
-	)
-	TextWindowInitState(state)
-	TextWindowAppend(state, "Score  Name")
-	TextWindowAppend(state, "-----  ----------------------------------")
-	for i = 1; i <= HIGH_SCORE_COUNT; i++ {
-		if Length(HighScoreList[i-1].Name) != 0 {
-			scoreStr = StrWidth(HighScoreList[i-1].Score, 5)
-			TextWindowAppend(state, scoreStr+"  "+HighScoreList[i-1].Name)
-		}
-	}
-}
-
-func HighScoresDisplay(linePos int16) {
-	var state TTextWindowState
-	state.LinePos = linePos
-	HighScoresInitTextWindow(&state)
-	if state.LineCount > 2 {
-		state.Title = "High scores for " + World.Info.Name
-		TextWindowDrawOpen(&state)
-		TextWindowSelect(&state, false, true)
-		TextWindowDrawClose(&state)
-	}
-	TextWindowFree(&state)
-}
-
 func EditorOpenEditTextWindow(state *TTextWindowState) {
 	SidebarClear()
 	VideoWriteText(61, 4, 0x30, " Return ")
@@ -917,37 +858,6 @@ func EditorEditHelpFile() {
 		TextWindowSaveFile(filename+".HLP", &textWindow)
 		TextWindowFree(&textWindow)
 		TextWindowDrawClose(&textWindow)
-	}
-}
-
-func HighScoresAdd(score int16) {
-	var (
-		textWindow TTextWindowState
-		name       string
-		i, listPos int16
-	)
-	listPos = 1
-	for listPos <= 30 && score < HighScoreList[listPos-1].Score {
-		listPos++
-	}
-	if listPos <= 30 && score > 0 {
-		for i = 29; i >= listPos; i-- {
-			HighScoreList[i+1-1] = HighScoreList[i-1]
-		}
-		HighScoreList[listPos-1].Score = score
-		HighScoreList[listPos-1].Name = "-- You! --"
-		HighScoresInitTextWindow(&textWindow)
-		textWindow.LinePos = listPos
-		textWindow.Title = "New high score for " + World.Info.Name
-		TextWindowDrawOpen(&textWindow)
-		TextWindowDraw(&textWindow, false, false)
-		name = ""
-		PopupPromptString("Congratulations!  Enter your name:", &name)
-		HighScoreList[listPos-1].Name = name
-		HighScoresSave()
-		TextWindowDrawClose(&textWindow)
-		TransitionDrawToBoard()
-		TextWindowFree(&textWindow)
 	}
 }
 

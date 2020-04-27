@@ -42,7 +42,7 @@ func Copy(s string, index, count int16) string {
 	if index < 1 {
 		index = 1
 	}
-	if count > int16(len(s))-index+1 {
+	if count < 0 || count > int16(len(s))-index+1 {
 		count = int16(len(s)) - index + 1
 	}
 	return s[index-1 : index-1+count]

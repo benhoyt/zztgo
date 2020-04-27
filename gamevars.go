@@ -21,6 +21,7 @@ const (
 	SizeOfStat             = 33
 	SizeOfBoardInfoMessage = 58 + 1
 	SizeOfWorldInfo        = 275
+	SizeOfHighScoreList    = 53 * HIGH_SCORE_COUNT
 )
 
 type (

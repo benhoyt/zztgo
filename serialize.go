@@ -189,3 +189,22 @@ func LoadResourceDataHeader(src []byte, header *TResourceDataHeader) {
 		src = src[4:]
 	}
 }
+
+func LoadHighScoreList(src []byte, entries []THighScoreEntry) {
+	for i := range entries {
+		name := LoadString(src[:51])
+		src = src[51:]
+		score := LoadInt16(src[:2])
+		src = src[2:]
+		entries[i] = THighScoreEntry{name, score}
+	}
+}
+
+func StoreHighScoreList(dest []byte, entries []THighScoreEntry) {
+	for _, entry := range entries {
+		StoreString(dest[:51], entry.Name)
+		dest = dest[51:]
+		StoreInt16(dest[:2], entry.Score)
+		dest = dest[2:]
+	}
+}

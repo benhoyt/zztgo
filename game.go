@@ -641,7 +641,7 @@ func WorldLoad(filename, extension string, titleOnly bool) (WorldLoad bool) {
 	BoardOpen(World.Info.CurrentBoard)
 	LoadedGameFileName = filename
 	WorldLoad = true
-	// TODO: HighScoresLoad()
+	HighScoresLoad()
 	SidebarClearLine(5)
 
 	return
@@ -754,6 +754,96 @@ func GameWorldLoad(extension string) (GameWorldLoad bool) {
 	}
 
 	return
+}
+
+func HighScoresAdd(score int16) {
+	var (
+		textWindow TTextWindowState
+		name       string
+		i, listPos int16
+	)
+	listPos = 1
+	for listPos <= 30 && score < HighScoreList[listPos-1].Score {
+		listPos++
+	}
+	if listPos <= 30 && score > 0 {
+		for i = 29; i >= listPos; i-- {
+			HighScoreList[i+1-1] = HighScoreList[i-1]
+		}
+		HighScoreList[listPos-1].Score = score
+		HighScoreList[listPos-1].Name = "-- You! --"
+		HighScoresInitTextWindow(&textWindow)
+		textWindow.LinePos = listPos
+		textWindow.Title = "New high score for " + World.Info.Name
+		TextWindowDrawOpen(&textWindow)
+		TextWindowDraw(&textWindow, false, false)
+		name = ""
+		PopupPromptString("Congratulations!  Enter your name:", &name)
+		HighScoreList[listPos-1].Name = name
+		HighScoresSave()
+		TextWindowDrawClose(&textWindow)
+		TransitionDrawToBoard()
+		TextWindowFree(&textWindow)
+	}
+}
+
+func HighScoresLoad() {
+	f, err := os.Open(World.Info.Name + ".HI")
+	if err == nil {
+		buf := make([]byte, SizeOfHighScoreList)
+		_, err = f.Read(buf)
+		if err == nil {
+			LoadHighScoreList(buf, HighScoreList[:])
+		}
+		f.Close()
+	}
+	if err != nil {
+		for i := 0; i < HIGH_SCORE_COUNT; i++ {
+			HighScoreList[i].Name = ""
+			HighScoreList[i].Score = -1
+		}
+	}
+}
+
+func HighScoresSave() {
+	f, err := os.Create(World.Info.Name + ".HI")
+	if err != nil {
+		DisplayIOError(err)
+		return
+	}
+	buf := make([]byte, SizeOfHighScoreList)
+	StoreHighScoreList(buf, HighScoreList[:])
+	_, err = f.Write(buf)
+	if err != nil {
+		DisplayIOError(err)
+		return
+	}
+	f.Close()
+}
+
+func HighScoresInitTextWindow(state *TTextWindowState) {
+	TextWindowInitState(state)
+	TextWindowAppend(state, "Score  Name")
+	TextWindowAppend(state, "-----  ----------------------------------")
+	for i := 0; i < HIGH_SCORE_COUNT; i++ {
+		if Length(HighScoreList[i].Name) != 0 {
+			scoreStr := StrWidth(HighScoreList[i].Score, 5)
+			TextWindowAppend(state, scoreStr+"  "+HighScoreList[i].Name)
+		}
+	}
+}
+
+func HighScoresDisplay(linePos int16) {
+	var state TTextWindowState
+	state.LinePos = linePos
+	HighScoresInitTextWindow(&state)
+	if state.LineCount > 2 {
+		state.Title = "High scores for " + World.Info.Name
+		TextWindowDrawOpen(&state)
+		TextWindowSelect(&state, false, true)
+		TextWindowDrawClose(&state)
+	}
+	TextWindowFree(&state)
 }
 
 func CopyStatDataToTextWindow(statId int16, state *TTextWindowState) {
@@ -1390,7 +1480,7 @@ func GamePlayLoop(boardChanged bool) {
 			}
 		}
 		if CurrentStatTicked > Board.StatCount && !GamePlayExitRequested {
-			time.Sleep(100 * time.Millisecond) // TODO
+			time.Sleep(1 * time.Millisecond) // TODO
 
 			if SoundHasTimeElapsed(&TickTimeCounter, TickTimeDuration) {
 				CurrentTick++
@@ -1405,7 +1495,7 @@ func GamePlayLoop(boardChanged bool) {
 	SoundClearQueue()
 	if GameStateElement == E_PLAYER {
 		if World.Info.Health <= 0 {
-			// TODO: HighScoresAdd(World.Info.Score)
+			HighScoresAdd(World.Info.Score)
 		}
 	} else if GameStateElement == E_MONITOR {
 		SidebarClearLine(5)
@@ -1468,10 +1558,9 @@ func GameTitleLoop() {
 					BoardChange(ReturnBoardId)
 					startPlay = true
 				}
-			// TODO
-			// case 'H':
-			// 	HighScoresLoad()
-			// 	HighScoresDisplay(1)
+			case 'H':
+				HighScoresLoad()
+				HighScoresDisplay(1)
 			case '|':
 				GameDebugPrompt()
 			case KEY_ESCAPE, 'Q':
