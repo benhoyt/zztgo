@@ -4,7 +4,6 @@
 TODO:
 - shift keys for shooting etc
 - timer handling, timeout of message display
-- FindFirst/FindNext for GameWorldLoad
 - high scores load/save
 - optimize when to call VideoShow
 - stat.Data should probably be []byte instead of string

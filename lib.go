@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/binary"
 	"fmt"
-	"io"
 	"math"
 	"math/rand"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -139,13 +136,6 @@ func Sqr(n int16) int16 {
 	return n * n
 }
 
-func Abs(n int16) int16 {
-	if n < 0 {
-		return -n
-	}
-	return n
-}
-
 func Ln(x float64) float64 {
 	return math.Log(x)
 }
@@ -163,98 +153,4 @@ func BoolToInt(b bool) int16 {
 		return 1
 	}
 	return 0
-}
-
-// File functions
-
-type File struct {
-	name string
-	file *os.File
-}
-
-var ioResult int16
-
-func IOResult() int16 {
-	return ioResult
-}
-
-func setIOResult(err error) {
-	ioResult = 0
-	if err != nil {
-		ioResult = 2 // "File not found" (good enough for our purposes)
-	}
-}
-
-func Assign(f *File, name string) {
-	f.name = name
-}
-
-func Reset(f *File, _ ...interface{}) {
-	file, err := os.Open(f.name)
-	f.file = file
-	setIOResult(err)
-}
-
-func Eof(f *File) bool {
-	return false // TODO
-}
-
-func Rewrite(f *File, _ ...interface{}) {
-	file, err := os.Create(f.name)
-	f.file = file
-	setIOResult(err)
-}
-
-func Read(f *File, data interface{}) {
-	err := binary.Read(f.file, binary.LittleEndian, data)
-	setIOResult(err)
-}
-
-func BlockRead(f *File, buf interface{}, count int16) {
-	// TODO
-}
-
-func BlockWrite(f *File, buf interface{}, count int16) {
-	// TODO
-}
-
-func Write(args ...interface{}) {
-	// TODO
-	// err := binary.Write(f.file, binary.LittleEndian, data)
-	// setIOResult(err)
-}
-
-func ReadLn(f *File, args ...interface{})  {} // TODO
-func WriteLn(f *File, args ...interface{}) {} // TODO
-
-func Close(f *File) {
-	err := f.file.Close()
-	setIOResult(err)
-}
-
-func Erase(f *File) {
-	err := os.Remove(f.name)
-	setIOResult(err)
-}
-
-func Seek(f *File, offset int16) {
-	_, err := f.file.Seek(int64(offset), io.SeekStart)
-	setIOResult(err)
-}
-
-type SearchRec struct {
-	Name string
-	name string // It's sometimes spelled "name" in the Pascal
-}
-
-const AnyFile = 0x3F
-
-var DosError = 0
-
-func FindFirst(pattern string, typ byte, rec interface{}) {
-	// TODO
-}
-
-func FindNext(rec interface{}) {
-	// TODO
 }

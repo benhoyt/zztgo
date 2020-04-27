@@ -2,6 +2,7 @@ package main // unit: Game
 
 import (
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -711,11 +712,11 @@ func GameWorldSave(prompt string, filename *string, extension string) {
 
 func GameWorldLoad(extension string) (GameWorldLoad bool) {
 	var (
-		textWindow    TTextWindowState
-		fileSearchRec SearchRec
-		entryName     string
-		i             int16
+		textWindow TTextWindowState
+		entryName  string
+		i          int16
 	)
+
 	TextWindowInitState(&textWindow)
 	if extension == ".ZZT" {
 		textWindow.Title = "ZZT Worlds"
@@ -724,21 +725,25 @@ func GameWorldLoad(extension string) (GameWorldLoad bool) {
 	}
 	GameWorldLoad = false
 	textWindow.Selectable = true
-	FindFirst("*"+extension, AnyFile, fileSearchRec)
-	for DosError == 0 {
-		entryName = Copy(fileSearchRec.Name, 1, Length(fileSearchRec.name)-4)
-		for i = 1; i <= WorldFileDescCount; i++ {
-			if entryName == WorldFileDescKeys[i-1] {
-				entryName = WorldFileDescValues[i-1]
+
+	matches, err := filepath.Glob("*" + extension)
+	if err == nil {
+		for _, match := range matches {
+			entryName = match[:len(match)-4]
+			for i = 1; i <= WorldFileDescCount; i++ {
+				if entryName == WorldFileDescKeys[i-1] {
+					entryName = WorldFileDescValues[i-1]
+				}
 			}
+			TextWindowAppend(&textWindow, entryName)
 		}
-		TextWindowAppend(&textWindow, entryName)
-		FindNext(fileSearchRec)
 	}
+
 	TextWindowAppend(&textWindow, "Exit")
 	TextWindowDrawOpen(&textWindow)
 	TextWindowSelect(&textWindow, false, false)
 	TextWindowDrawClose(&textWindow)
+
 	if textWindow.LinePos < textWindow.LineCount && !TextWindowRejected {
 		entryName = textWindow.Lines[textWindow.LinePos-1]
 		if Pos(' ', entryName) != 0 {
@@ -747,7 +752,7 @@ func GameWorldLoad(extension string) (GameWorldLoad bool) {
 		GameWorldLoad = WorldLoad(entryName, extension, false)
 		TransitionDrawToFill('\xdb', 0x44)
 	}
-	TextWindowFree(&textWindow)
+
 	return
 }
 
