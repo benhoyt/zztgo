@@ -2,13 +2,12 @@
 
 /*
 TODO:
-- shift keys for shooting etc
 - timer handling, timeout of message display
-- high scores load/save
-- optimize when to call VideoShow
-- stat.Data should probably be []byte instead of string
 - editor
 - sounds
+- performance
+  + optimize when to call VideoShow
+  + stat.Data should probably be []byte instead of string
 */
 
 package main

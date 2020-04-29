@@ -333,8 +333,7 @@ func SidebarPromptCharacter(editable bool, x, y int16, prompt string, value *byt
 			VideoWriteText(x+i-int16(*value)+5, y+2, 0x1E, Chr(byte((i+0x100)%0x100)))
 		}
 		if editable {
-			Delay(25)
-			InputUpdate()
+			InputReadWaitKey()
 			if InputKeyPressed == KEY_TAB {
 				InputDeltaX = 9
 			}
@@ -372,7 +371,7 @@ func SidebarPromptSlider(editable bool, x, y int16, prompt string, value *byte) 
 	for {
 		if editable {
 			VideoWriteText(x+int16(*value)+1, y+1, 0x9F, "\x1f")
-			InputUpdate()
+			InputReadWaitKey()
 			if InputKeyPressed >= '1' && InputKeyPressed <= '9' {
 				*value = Ord(InputKeyPressed) - 49
 				SidebarClearLine(y + 1)
@@ -418,8 +417,7 @@ func SidebarPromptChoice(editable bool, y int16, prompt, choiceStr string, resul
 		}
 		if editable {
 			VideoWriteText(62+i, y+1, 0x9F, "\x1f")
-			Delay(35)
-			InputUpdate()
+			InputReadWaitKey()
 			newResult = int16(*result) + InputDeltaX
 			if int16(*result) != newResult && newResult >= 0 && newResult <= choiceCount-1 {
 				*result = byte(newResult)
@@ -1416,6 +1414,7 @@ func GamePlayLoop(boardChanged bool) {
 		BoardChange(0)
 		JustStarted = false
 	}
+
 	Board.Tiles[Board.Stats[0].X][Board.Stats[0].Y].Element = byte(GameStateElement)
 	Board.Tiles[Board.Stats[0].X][Board.Stats[0].Y].Color = ElementDefs[GameStateElement].Color
 	if GameStateElement == E_MONITOR {
@@ -1429,6 +1428,7 @@ func GamePlayLoop(boardChanged bool) {
 	GamePlayExitRequested = false
 	CurrentTick = Random(100)
 	CurrentStatTicked = Board.StatCount + 1
+
 	for !GamePlayExitRequested {
 		if GamePaused {
 			if SoundHasTimeElapsed(&TickTimeCounter, 25) {
@@ -1444,6 +1444,7 @@ func GamePlayLoop(boardChanged bool) {
 				}
 			}
 			VideoWriteText(64, 5, 0x1F, "Pausing...")
+
 			InputUpdate()
 			if InputKeyPressed == KEY_ESCAPE {
 				GamePromptEndPlay()
@@ -1480,7 +1481,7 @@ func GamePlayLoop(boardChanged bool) {
 			}
 		}
 		if CurrentStatTicked > Board.StatCount && !GamePlayExitRequested {
-			time.Sleep(1 * time.Millisecond) // TODO
+			time.Sleep(100 * time.Millisecond) // TODO
 
 			if SoundHasTimeElapsed(&TickTimeCounter, TickTimeDuration) {
 				CurrentTick++
@@ -1492,6 +1493,7 @@ func GamePlayLoop(boardChanged bool) {
 			}
 		}
 	}
+
 	SoundClearQueue()
 	if GameStateElement == E_PLAYER {
 		if World.Info.Health <= 0 {

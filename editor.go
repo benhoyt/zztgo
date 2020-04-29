@@ -545,7 +545,7 @@ func EditorLoop() {
 		if drawMode == DrawingOn {
 			EditorPlaceTile(cursorX, cursorY)
 		}
-		InputUpdate()
+		InputReadWaitKey()
 		if InputKeyPressed == '\x00' && InputDeltaX == 0 && InputDeltaY == 0 && !InputShiftPressed {
 			if SoundHasTimeElapsed(&TickTimeCounter, 15) {
 				cursorBlinker = (cursorBlinker + 1) % 3

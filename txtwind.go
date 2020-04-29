@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"time"
 )
 
 // interface uses: Video
@@ -171,8 +170,7 @@ func TextWindowSelect(state *TTextWindowState, hyperlinkAsSelect, viewingFile bo
 	state.Hyperlink = ""
 	TextWindowDraw(state, false, viewingFile)
 	for {
-		time.Sleep(100 * time.Millisecond) // TODO
-		InputUpdate()
+		InputReadWaitKey()
 		newLinePos = state.LinePos
 		if InputDeltaY != 0 {
 			newLinePos += InputDeltaY

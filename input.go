@@ -68,16 +68,6 @@ func InputUpdateWithKey(keyRead byte) {
 		InputKeyBuffer += string([]byte{InputKeyPressed})
 	}
 
-	// TODO
-	//for KeyPressed() {
-	//	InputKeyPressed = ReadKey()
-	//	if InputKeyPressed == '\x00' || InputKeyPressed == '\x01' || InputKeyPressed == '\x02' {
-	//		InputKeyBuffer += Chr(Ord(ReadKey()) | 0x80)
-	//	} else {
-	//		InputKeyBuffer += string([]byte{InputKeyPressed})
-	//	}
-	//}
-
 	if Length(InputKeyBuffer) != 0 {
 		InputKeyPressed = InputKeyBuffer[0]
 		if Length(InputKeyBuffer) == 1 {
