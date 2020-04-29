@@ -1,5 +1,9 @@
 package main // unit: Editor
 
+import (
+	"time"
+)
+
 // interface uses: GameVars, TxtWind
 
 // implementation uses: Dos, Crt, Video, Sounds, Input, Elements, Oop, Game
@@ -530,8 +534,9 @@ func EditorLoop() {
 		if drawMode == DrawingOn {
 			EditorPlaceTile(cursorX, cursorY)
 		}
-		InputReadWaitKey()
+		InputUpdate()
 		if InputKeyPressed == '\x00' && InputDeltaX == 0 && InputDeltaY == 0 && !InputShiftPressed {
+			time.Sleep(125 * time.Millisecond) // TODO
 			if SoundHasTimeElapsed(&TickTimeCounter, 15) {
 				cursorBlinker = (cursorBlinker + 1) % 3
 			}
