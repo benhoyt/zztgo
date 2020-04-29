@@ -3,7 +3,7 @@
 /*
 TODO:
 - timer handling, timeout of message display
-- editor
+- editor: EditorTransferBoard
 - sounds
 - performance
   + optimize when to call VideoShow
@@ -32,7 +32,7 @@ func main() {
 	StartupWorldFileName = "TOWN"
 	ResourceDataFileName = "ZZT.DAT"
 	GameTitleExitRequested = false
-	EditorEnabled = false
+	EditorEnabled = true
 
 	VideoInstall()
 	TextWindowInit(5, 3, 50, 18)

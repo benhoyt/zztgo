@@ -1390,11 +1390,10 @@ func GamePlayLoop(boardChanged bool) {
 			VideoWriteText(65, 16, 0x1F, " About ZZT!")
 			VideoWriteText(62, 17, 0x70, " H ")
 			VideoWriteText(65, 17, 0x1E, " High Scores")
-			// TODO
-			// if EditorEnabled {
-			// 	VideoWriteText(62, 18, 0x30, " E ")
-			// 	VideoWriteText(65, 18, 0x1E, " Board Editor")
-			// }
+			if EditorEnabled {
+				VideoWriteText(62, 18, 0x30, " E ")
+				VideoWriteText(65, 18, 0x1E, " Board Editor")
+			}
 		}
 	}
 
@@ -1544,13 +1543,12 @@ func GameTitleLoop() {
 				}
 			case 'A':
 				GameAboutScreen()
-			// TODO
-			// case 'E':
-			// 	if EditorEnabled {
-			// 		EditorLoop()
-			// 		ReturnBoardId = World.Info.CurrentBoard
-			// 		boardChanged = true
-			// 	}
+			case 'E':
+				if EditorEnabled {
+					EditorLoop()
+					ReturnBoardId = World.Info.CurrentBoard
+					boardChanged = true
+				}
 			case 'S':
 				SidebarPromptSlider(true, 66, 21, "Game speed:;FS", &TickSpeed)
 				InputKeyPressed = '\x00'
