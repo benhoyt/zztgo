@@ -2,6 +2,7 @@
 
 /*
 TODO:
+- ensure len>0 for things like: switch state.Lines[lpos-1][0]
 - timer handling, timeout of message display
 - editor: EditorTransferBoard
 - sounds
