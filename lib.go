@@ -112,8 +112,6 @@ func Replace(s string, index int16, b byte) string {
 
 // Misc functions
 
-var Time int16 // TODO
-
 func Delay(milliseconds int16) {
 	time.Sleep(time.Duration(milliseconds) * time.Millisecond)
 }

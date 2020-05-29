@@ -1109,7 +1109,7 @@ func DisplayMessage(time int16, message string) {
 	}
 	if Length(message) != 0 {
 		AddStat(0, 0, E_MESSAGE_TIMER, 0, 1, StatTemplateDefault)
-		Board.Stats[Board.StatCount].P2 = byte(Time / (TickTimeDuration + 1))
+		Board.Stats[Board.StatCount].P2 = byte(time / (TickTimeDuration + 1))
 		Board.Info.Message = message
 	}
 }
@@ -1452,6 +1452,7 @@ func GamePlayLoop(boardChanged bool) {
 				ElementDefs[Board.Tiles[int16(Board.Stats[0].X)+InputDeltaX][int16(Board.Stats[0].Y)+InputDeltaY].Element].TouchProc(int16(Board.Stats[0].X)+InputDeltaX, int16(Board.Stats[0].Y)+InputDeltaY, 0, &InputDeltaX, &InputDeltaY)
 			}
 			if (InputDeltaX != 0 || InputDeltaY != 0) && ElementDefs[Board.Tiles[int16(Board.Stats[0].X)+InputDeltaX][int16(Board.Stats[0].Y)+InputDeltaY].Element].Walkable {
+				// Move player
 				if Board.Tiles[Board.Stats[0].X][Board.Stats[0].Y].Element == E_PLAYER {
 					MoveStat(0, int16(Board.Stats[0].X)+InputDeltaX, int16(Board.Stats[0].Y)+InputDeltaY)
 				} else {
@@ -1464,13 +1465,15 @@ func GamePlayLoop(boardChanged bool) {
 					DrawPlayerSurroundings(int16(Board.Stats[0].X), int16(Board.Stats[0].Y), 0)
 					DrawPlayerSurroundings(int16(Board.Stats[0].X)-InputDeltaX, int16(Board.Stats[0].Y)-InputDeltaY, 0)
 				}
+
+				// Unpause
 				GamePaused = false
 				SidebarClearLine(5)
 				CurrentTick = Random(100)
 				CurrentStatTicked = Board.StatCount + 1
 				World.Info.IsSave = true
 			}
-		} else {
+		} else { // not GamePaused
 			if CurrentStatTicked <= Board.StatCount {
 				stat := &Board.Stats[CurrentStatTicked]
 				if stat.Cycle != 0 && CurrentTick%stat.Cycle == CurrentStatTicked%stat.Cycle {
@@ -1479,10 +1482,15 @@ func GamePlayLoop(boardChanged bool) {
 				CurrentStatTicked++
 			}
 		}
+
 		if CurrentStatTicked > Board.StatCount && !GamePlayExitRequested {
-			time.Sleep(100 * time.Millisecond) // TODO
+			// all stats ticked
+
+			// TODO: should wait till next TickTimeCounter/TickTimeDuration up
+			time.Sleep(time.Duration(TickTimeDuration) * 10 * time.Millisecond)
 
 			if SoundHasTimeElapsed(&TickTimeCounter, TickTimeDuration) {
+				// next cycle
 				CurrentTick++
 				if CurrentTick > 420 {
 					CurrentTick = 1
